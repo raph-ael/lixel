@@ -1,0 +1,16 @@
+# large or third-party trees, recreated per docs/SETUP.md
+/src/
+/ref/
+/out/
+/kernel/linux/
+/kernel/out/
+/kernel/boot-good/
+/kernel/v4l2loopback-*/
+# build products
+*.o
+*.ko
+*.mod
+*.mod.c
+*.cmd
+Module.symvers
+modules.order

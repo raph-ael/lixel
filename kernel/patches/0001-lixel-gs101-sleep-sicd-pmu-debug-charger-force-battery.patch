@@ -1,0 +1,907 @@
+diff --git a/drivers/power/supply/max77759_charger.c b/drivers/power/supply/max77759_charger.c
+index f2088f166..ed0c84029 100644
+--- a/drivers/power/supply/max77759_charger.c
++++ b/drivers/power/supply/max77759_charger.c
+@@ -90,6 +90,7 @@ struct max77759_charger {
+ 	int irqs[NUM_IRQS];
+ 	struct mutex lock; /* protects the state below */
+ 	enum max77759_chgr_mode mode;
++	bool force_battery;	/* run from the battery although VBUS is present */
+ 
+ 	/* Step charging by battery temperature, see max77759_temp_work() */
+ 	struct power_supply *bat_psy;
+@@ -460,6 +461,10 @@ static int charger_set_mode(struct max77759_charger *chg,
+ 
+ 	guard(mutex)(&chg->lock);
+ 
++	/* Power measurements over USB: keep the buck off, the battery supplies */
++	if (chg->force_battery && mode != MAX77759_CHGR_MODE_OTG_BOOST_ON)
++		mode = MAX77759_CHGR_MODE_OFF;
++
+ 	if (chg->mode == mode)
+ 		return 0;
+ 
+@@ -485,6 +490,35 @@ static int charger_set_mode(struct max77759_charger *chg,
+ 	return 0;
+ }
+ 
++static ssize_t force_battery_show(struct device *dev,
++				  struct device_attribute *attr, char *buf)
++{
++	struct max77759_charger *chg = dev_get_drvdata(dev);
++
++	return sysfs_emit(buf, "%d\n", chg->force_battery);
++}
++
++static ssize_t force_battery_store(struct device *dev,
++				   struct device_attribute *attr,
++				   const char *buf, size_t count)
++{
++	struct max77759_charger *chg = dev_get_drvdata(dev);
++	bool on;
++	int ret;
++
++	ret = kstrtobool(buf, &on);
++	if (ret)
++		return ret;
++
++	chg->force_battery = on;
++	charger_set_mode(chg, MAX77759_CHGR_MODE_OFF);
++	if (!on)
++		schedule_delayed_work(&chg->psy_work, 0);
++
++	return count;
++}
++static DEVICE_ATTR_RW(force_battery);
++
+ static int enable_chgin_otg(struct regulator_dev *rdev)
+ {
+ 	struct max77759_charger *chg = rdev_get_drvdata(rdev);
+@@ -1033,6 +1067,10 @@ static int max77759_charger_probe(struct platform_device *pdev)
+ 
+ 	power_supply_for_each_psy(chg, max77759_charger_sync_tcpm);
+ 
++	ret = device_create_file(dev, &dev_attr_force_battery);
++	if (ret)
++		return ret;
++
+ 	return max77759_init_irqhandler(chg);
+ }
+ 
+diff --git a/drivers/soc/samsung/exynos-pmu.c b/drivers/soc/samsung/exynos-pmu.c
+index 3a91b0b04..1d67703d3 100644
+--- a/drivers/soc/samsung/exynos-pmu.c
++++ b/drivers/soc/samsung/exynos-pmu.c
+@@ -8,6 +8,9 @@
+ #include <linux/array_size.h>
+ #include <linux/bitmap.h>
+ #include <linux/cpuhotplug.h>
++#include <linux/debugfs.h>
++#include <linux/seq_file.h>
++#include <linux/syscore_ops.h>
+ #include <linux/cpu_pm.h>
+ #include <linux/of.h>
+ #include <linux/of_address.h>
+@@ -19,6 +22,7 @@
+ #include <linux/reboot.h>
+ #include <linux/regmap.h>
+ #include <linux/suspend.h>
++#include <linux/uaccess.h>
+ 
+ #include <linux/soc/samsung/exynos-regs-pmu.h>
+ #include <linux/soc/samsung/exynos-pmu.h>
+@@ -220,6 +224,9 @@ struct regmap *exynos_get_pmu_regmap_by_phandle(struct device_node *np,
+ }
+ EXPORT_SYMBOL_GPL(exynos_get_pmu_regmap_by_phandle);
+ 
++static void gs101_sicd_enter(unsigned int cpu);
++static void gs101_sicd_exit(unsigned int cpu);
++
+ /*
+  * CPU_INFORM register "hint" values are required to be programmed in addition to
+  * the standard PSCI calls to have functional CPU hotplug and CPU idle states.
+@@ -269,6 +276,7 @@ static int gs101_cpu_pmu_online(void)
+ 	}
+ 
+ 	cpu = smp_processor_id();
++	gs101_sicd_exit(cpu);
+ 	__gs101_cpu_pmu_online(cpu);
+ 	raw_spin_unlock(&pmu_context->cpupm_lock);
+ 
+@@ -340,6 +348,7 @@ static int gs101_cpu_pmu_offline(void)
+ 	}
+ 
+ 	__gs101_cpu_pmu_offline(cpu);
++	gs101_sicd_enter(cpu);
+ 	raw_spin_unlock(&pmu_context->cpupm_lock);
+ 
+ 	return NOTIFY_OK;
+@@ -474,6 +483,8 @@ static int setup_cpuhp_and_cpuidle(struct device *dev)
+ 	return 0;
+ }
+ 
++static void gs101_sleep_init(struct device *dev);
++
+ static int exynos_pmu_probe(struct platform_device *pdev)
+ {
+ 	struct device *dev = &pdev->dev;
+@@ -541,6 +552,9 @@ static int exynos_pmu_probe(struct platform_device *pdev)
+ 	if (pmu_context->pmu_data && pmu_context->pmu_data->pmu_init)
+ 		pmu_context->pmu_data->pmu_init();
+ 
++	if (pmu_context->pmu_data && pmu_context->pmu_data->pmu_cpuhp)
++		gs101_sleep_init(dev);
++
+ 	platform_set_drvdata(pdev, pmu_context);
+ 
+ 	ret = devm_mfd_add_devices(dev, PLATFORM_DEVID_NONE, exynos_pmu_devs,
+@@ -555,6 +569,638 @@ static int exynos_pmu_probe(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
++/*
++ * gs101 system sleep.
++ *
++ * PSCI SYSTEM_SUSPEND alone is not enough on gs101: like for the CPU idle
++ * states, ACPM (the "flexpmu" firmware on the APM core) decides what the
++ * SoC does from the hint in the last CPU's CPU_INFORM register, and only
++ * wakes the SoC up for the sources enabled in WAKEUP_INT_EN. Without the
++ * SLEEP hint and the wake-up mask the SoC either does not power down or
++ * never comes back. The sequences below are what Google's vendor kernel
++ * runs around SYSTEM_SUSPEND (cal_pm_enter/exit(SYS_SLEEP)).
++ */
++enum gs101_seq_type {
++	GS101_SEQ_WRITE,
++	GS101_SEQ_COND_WRITE,
++	GS101_SEQ_CLEAR_PEND,
++	GS101_SEQ_SET_BIT_ATOMIC,
++	GS101_SEQ_CHECK_SKIP,
++	GS101_SEQ_WAIT,
++};
++
++struct gs101_seq {
++	u8 type;
++	u32 addr;
++	u32 mask;
++	u32 val;
++	u32 cond_addr;
++	u32 cond_mask;
++	u32 cond_val;
++	u32 unused;
++};
++
++#include "gs101-sleep-seq.h"
++
++#define GS101_PMU_BASE			0x17460000
++#define GS101_PMU_INTR_GEN_BASE		0x17470000
++#define GS101_CPU_INFORM_SLEEP		4
++/* RTC, TRTC, EINT, EINT_FAR, MAILBOX_AOC2AP, USB_REWA */
++#define GS101_WAKEUP_INT_EN_SLEEP	0x000100bf
++#define GS101_SEQ_MAX_MAPS		40
++
++struct gs101_seq_map {
++	u32 base;
++	void __iomem *va;
++};
++
++static struct gs101_seq_map gs101_seq_maps[GS101_SEQ_MAX_MAPS];
++static bool gs101_sleep_ready;
++static bool gs101_sleep_entered;
++static u32 gs101_wakeup_stat[2];
++
++static bool gs101_sleep_seq = true;
++module_param_named(sleep_seq, gs101_sleep_seq, bool, 0644);
++static uint gs101_sleep_wakeup_en = GS101_WAKEUP_INT_EN_SLEEP;
++module_param_named(sleep_wakeup_en, gs101_sleep_wakeup_en, uint, 0644);
++static uint gs101_sleep_hint = GS101_CPU_INFORM_SLEEP;
++module_param_named(sleep_hint, gs101_sleep_hint, uint, 0644);
++/* 0: exit sequence, 1: early wake-up sequence, 2: decide from ACPM counter */
++static uint gs101_sleep_exit_mode = 2;
++module_param_named(sleep_exit_mode, gs101_sleep_exit_mode, uint, 0644);
++
++static void __iomem *gs101_flexpmu_dbg;
++static u32 gs101_apsoc_cnt_prev;
++
++/* ACPM flexpmu debug area: 16-byte lines, data at +8 */
++#define FLEXPMU_LINE(n)			((n) * 16 + 8)
++#define FLEXPMU_AP_COUNT_SLEEP		22
++#define FLEXPMU_MIF_COUNT_SLEEP		23
++#define FLEXPMU_AP_COUNT_SICD		24
++#define FLEXPMU_MIF_COUNT_SICD		25
++
++static u32 gs101_flexpmu_read(unsigned int line, unsigned int word)
++{
++	if (!gs101_flexpmu_dbg)
++		return 0;
++	return readl(gs101_flexpmu_dbg + FLEXPMU_LINE(line) + word * 4);
++}
++
++static void __iomem *gs101_seq_va(u32 addr)
++{
++	u32 base = addr & ~0xffffU;
++	int i;
++
++	for (i = 0; i < GS101_SEQ_MAX_MAPS; i++) {
++		if (gs101_seq_maps[i].base == base)
++			return gs101_seq_maps[i].va + (addr & 0xffff);
++	}
++	return NULL;
++}
++
++static int gs101_seq_map_one(u32 addr)
++{
++	u32 base = addr & ~0xffffU;
++	int i;
++
++	if (!addr || base == GS101_PMU_BASE || base == GS101_PMU_INTR_GEN_BASE)
++		return 0;
++
++	for (i = 0; i < GS101_SEQ_MAX_MAPS; i++) {
++		if (gs101_seq_maps[i].base == base)
++			return 0;
++		if (!gs101_seq_maps[i].base) {
++			gs101_seq_maps[i].va = ioremap(base, 0x10000);
++			if (!gs101_seq_maps[i].va)
++				return -ENOMEM;
++			gs101_seq_maps[i].base = base;
++			return 0;
++		}
++	}
++	return -ENOSPC;
++}
++
++static int gs101_seq_map(const struct gs101_seq *seq, unsigned int n)
++{
++	unsigned int i;
++	int ret;
++
++	for (i = 0; i < n; i++) {
++		ret = gs101_seq_map_one(seq[i].addr);
++		if (!ret)
++			ret = gs101_seq_map_one(seq[i].cond_addr);
++		if (ret)
++			return ret;
++	}
++	return 0;
++}
++
++static u32 gs101_seq_read(u32 addr)
++{
++	u32 base = addr & ~0xffffU, val = 0;
++	void __iomem *va;
++
++	if (base == GS101_PMU_BASE) {
++		val = pmu_raw_readl(addr & 0xffff);
++	} else if (base == GS101_PMU_INTR_GEN_BASE) {
++		regmap_read(pmu_context->pmuintrgen, addr & 0xffff, &val);
++	} else {
++		va = gs101_seq_va(addr);
++		if (va)
++			val = readl(va);
++	}
++	return val;
++}
++
++static void gs101_seq_write(u32 addr, u32 mask, u32 val)
++{
++	u32 base = addr & ~0xffffU;
++	void __iomem *va;
++
++	if (base == GS101_PMU_BASE) {
++		if (mask == U32_MAX)
++			tensor_sec_reg_write((void *)(uintptr_t)GS101_PMU_BASE,
++					     addr & 0xffff, val);
++		else
++			tensor_sec_update_bits((void *)(uintptr_t)GS101_PMU_BASE,
++					       addr & 0xffff, mask, val);
++	} else if (base == GS101_PMU_INTR_GEN_BASE) {
++		if (mask == U32_MAX)
++			regmap_write(pmu_context->pmuintrgen, addr & 0xffff, val);
++		else
++			regmap_update_bits(pmu_context->pmuintrgen,
++					   addr & 0xffff, mask, val);
++	} else {
++		va = gs101_seq_va(addr);
++		if (!va)
++			return;
++		if (mask != U32_MAX)
++			val = (readl(va) & ~mask) | (val & mask);
++		writel(val, va);
++	}
++}
++
++static void gs101_seq_run(const struct gs101_seq *seq, unsigned int n)
++{
++	bool skip = false;
++	unsigned int i, t;
++
++	for (i = 0; i < n; i++) {
++		const struct gs101_seq *e = &seq[i];
++		bool cond = !e->cond_addr ||
++			(gs101_seq_read(e->cond_addr) & e->cond_mask) == e->cond_val;
++
++		if (skip) {
++			skip = false;
++			continue;
++		}
++
++		switch (e->type) {
++		case GS101_SEQ_WRITE:
++			gs101_seq_write(e->addr, e->mask, e->val);
++			break;
++		case GS101_SEQ_COND_WRITE:
++			if (cond)
++				gs101_seq_write(e->addr, e->mask, e->val);
++			break;
++		case GS101_SEQ_CLEAR_PEND:
++			gs101_seq_write(e->addr, U32_MAX,
++					gs101_seq_read(e->cond_addr) &
++					e->cond_mask & e->mask);
++			break;
++		case GS101_SEQ_SET_BIT_ATOMIC:
++			/* the value is the bit number */
++			tensor_sec_reg_write((void *)(uintptr_t)GS101_PMU_BASE,
++					     (e->addr & 0xffff) | 0xc000, e->val);
++			break;
++		case GS101_SEQ_CHECK_SKIP:
++			skip = (gs101_seq_read(e->addr) & e->mask) == e->val;
++			break;
++		case GS101_SEQ_WAIT:
++			if (!cond)
++				break;
++			for (t = 0; t < 5000; t++) {
++				if ((gs101_seq_read(e->addr) & e->mask) == e->val)
++					break;
++				udelay(1);
++			}
++			if (t == 5000)
++				pr_err("gs101-sleep: wait timed out at %#x\n",
++				       e->addr);
++			break;
++		}
++	}
++}
++
++/*
++ * SICD ("system idle clock down"): when the last CPU goes idle with the SICD
++ * hint, ACPM takes the whole SoC down behind it (PLLs, buses, and the memory
++ * interface when nothing else holds it) and brings it back on any wake-up
++ * source enabled in WAKEUP_INT_EN. The vendor kernel uses it from cpuidle
++ * whenever no "idle IP" is busy. Here it is used in suspend-to-idle, where
++ * all devices are suspended anyway (sicd=1), or always (sicd=2, experimental).
++ */
++#define GS101_CPU_INFORM_SICD		3
++#define GS101_WAKEUP_INT_EN_SICD	0x7f8f00ff
++#define GS101_WAKEUP2_INT_EN_SICD	0x0000000c
++
++static uint gs101_sicd_mode;
++module_param_named(sicd, gs101_sicd_mode, uint, 0644);
++static uint gs101_sicd_wakeup_en = GS101_WAKEUP_INT_EN_SICD;
++module_param_named(sicd_wakeup_en, gs101_sicd_wakeup_en, uint, 0644);
++static uint gs101_sicd_count;
++module_param_named(sicd_count, gs101_sicd_count, uint, 0444);
++static uint gs101_sicd_early;
++module_param_named(sicd_early, gs101_sicd_early, uint, 0444);
++
++static struct cpumask gs101_idle_cpus;
++static bool gs101_in_s2idle;
++static bool gs101_sicd_entered;
++static u32 gs101_sicd_cnt_prev;
++/* wake-up reasons seen when leaving SICD: [0] completed, [1] aborted */
++static u32 gs101_sicd_ws_hist[2][2][32];
++static u32 gs101_sicd_ws_last[2][2];
++
++/* Called with cpupm_lock held and IRQs off, after the C2 hint was set */
++static void gs101_sicd_enter(unsigned int cpu)
++{
++	cpumask_set_cpu(cpu, &gs101_idle_cpus);
++
++	if (!gs101_sicd_mode || !gs101_flexpmu_dbg || !gs101_sleep_ready)
++		return;
++	if (gs101_sicd_mode == 1 && !gs101_in_s2idle)
++		return;
++	if (!bitmap_empty(pmu_context->in_cpuhp, num_possible_cpus()))
++		return;
++	if (!cpumask_equal(&gs101_idle_cpus, cpu_online_mask))
++		return;
++
++	gs101_sicd_cnt_prev = gs101_flexpmu_read(FLEXPMU_AP_COUNT_SICD, 1);
++	regmap_write(pmu_context->pmureg, GS101_CPU_INFORM(cpu),
++		     GS101_CPU_INFORM_SICD);
++	regmap_write(pmu_context->pmureg, GS101_WAKEUP_STAT, 0);
++	regmap_write(pmu_context->pmureg, GS101_TOP_INT_EN,
++		     gs101_sicd_wakeup_en);
++	regmap_write(pmu_context->pmureg, GS101_WAKEUP2_STAT, 0);
++	regmap_write(pmu_context->pmureg, GS101_WAKEUP2_INT_EN,
++		     GS101_WAKEUP2_INT_EN_SICD);
++	gs101_sicd_entered = true;
++}
++
++/* Called with cpupm_lock held and IRQs off, by every CPU leaving idle */
++static void gs101_sicd_exit(unsigned int cpu)
++{
++	unsigned int r, b;
++	bool early;
++
++	cpumask_clear_cpu(cpu, &gs101_idle_cpus);
++
++	if (!gs101_sicd_entered)
++		return;
++	gs101_sicd_entered = false;
++
++	early = gs101_flexpmu_read(FLEXPMU_AP_COUNT_SICD, 1) == gs101_sicd_cnt_prev;
++	for (r = 0; r < 2; r++) {
++		u32 ws = pmu_raw_readl(r ? GS101_WAKEUP2_STAT : GS101_WAKEUP_STAT);
++
++		gs101_sicd_ws_last[early][r] = ws;
++		for (b = 0; b < 32; b++)
++			if (ws & BIT(b))
++				gs101_sicd_ws_hist[early][r][b]++;
++	}
++
++	if (early) {
++		gs101_sicd_early++;
++		gs101_seq_run(gs101_earlywkup_sicd,
++			      ARRAY_SIZE(gs101_earlywkup_sicd));
++	} else {
++		gs101_sicd_count++;
++		gs101_seq_run(gs101_exit_sicd, ARRAY_SIZE(gs101_exit_sicd));
++	}
++}
++
++static int gs101_sleep_syscore_suspend(void *data)
++{
++	unsigned int cpu = smp_processor_id();
++
++	gs101_sleep_entered = false;
++	if (!gs101_sleep_ready || !gs101_sleep_seq ||
++	    pm_suspend_target_state != PM_SUSPEND_MEM)
++		return 0;
++
++	gs101_apsoc_cnt_prev = gs101_flexpmu_read(FLEXPMU_AP_COUNT_SLEEP, 1);
++
++	regmap_write(pmu_context->pmureg, GS101_WAKEUP_STAT, 0);
++	regmap_write(pmu_context->pmureg, GS101_TOP_INT_EN,
++		     gs101_sleep_wakeup_en);
++	regmap_write(pmu_context->pmureg, GS101_WAKEUP2_STAT, 0);
++	regmap_write(pmu_context->pmureg, GS101_WAKEUP2_INT_EN, 0);
++
++	regmap_write(pmu_context->pmureg, GS101_CPU_INFORM(cpu),
++		     gs101_sleep_hint);
++	gs101_seq_run(gs101_enter_sleep, ARRAY_SIZE(gs101_enter_sleep));
++	gs101_sleep_entered = true;
++
++	return 0;
++}
++
++static void gs101_sleep_syscore_resume(void *data)
++{
++	bool early;
++	u32 cnt;
++
++	if (!gs101_sleep_entered)
++		return;
++	gs101_sleep_entered = false;
++
++	gs101_wakeup_stat[0] = pmu_raw_readl(GS101_WAKEUP_STAT);
++	gs101_wakeup_stat[1] = pmu_raw_readl(GS101_WAKEUP2_STAT);
++	cnt = gs101_flexpmu_read(FLEXPMU_AP_COUNT_SLEEP, 1);
++
++	if (gs101_sleep_exit_mode == 2)
++		early = gs101_flexpmu_dbg && cnt == gs101_apsoc_cnt_prev;
++	else
++		early = gs101_sleep_exit_mode == 1;
++
++	if (early)
++		gs101_seq_run(gs101_earlywkup_sleep,
++			      ARRAY_SIZE(gs101_earlywkup_sleep));
++	else
++		gs101_seq_run(gs101_exit_sleep, ARRAY_SIZE(gs101_exit_sleep));
++
++	pr_info("gs101-sleep: %s, wakeup_stat %#x %#x, apsoc sleep count %u -> %u\n",
++		early ? "early wake-up" : "woke up", gs101_wakeup_stat[0],
++		gs101_wakeup_stat[1], gs101_apsoc_cnt_prev, cnt);
++}
++
++static const struct syscore_ops gs101_sleep_syscore_ops = {
++	.suspend = gs101_sleep_syscore_suspend,
++	.resume = gs101_sleep_syscore_resume,
++};
++
++static struct syscore gs101_sleep_syscore = {
++	.ops = &gs101_sleep_syscore_ops,
++};
++
++/*
++ * Find ACPM's FLEXPMU_DBG buffer: a struct plugin_buffer { u32 size, address,
++ * next; char name[12]; } somewhere in the APM SRAM.
++ */
++#define GS101_APM_SRAM_BASE	0x02039000
++#define GS101_APM_SRAM_SIZE	0x40000
++#define GS101_APM_INITDATA	0xa000
++
++static int gs101_flexpmu_find(void)
++{
++	void __iomem *sram;
++	u32 plugins, nplugins, i, n, addr = 0;
++
++	if (gs101_flexpmu_dbg)
++		return 0;
++
++	sram = ioremap(GS101_APM_SRAM_BASE, GS101_APM_SRAM_SIZE);
++	if (!sram)
++		return -ENOMEM;
++
++	/*
++	 * struct acpm_framework at initdata: { u32 plugins, num_plugins, ... };
++	 * struct plugin is 48 bytes with plugin_ops at +12; struct plugin_ops
++	 * has its build_info at +16 and the buffer list head at +68.
++	 * Only these are read: parts of the SRAM abort on access.
++	 */
++	plugins = readl(sram + GS101_APM_INITDATA);
++	nplugins = readl(sram + GS101_APM_INITDATA + 4);
++	if (plugins >= GS101_APM_SRAM_SIZE || nplugins > 32)
++		nplugins = 0;
++
++	for (i = 0; i < nplugins && !addr; i++) {
++		u32 ops, buf;
++
++		if (plugins + i * 48 + 48 > GS101_APM_SRAM_SIZE)
++			break;
++		ops = readl(sram + plugins + i * 48 + 12);
++		if (!ops || ops + 72 > GS101_APM_SRAM_SIZE)
++			continue;
++		/* build_version[47] must be 0 and major >= 1 */
++		if (readb(sram + ops + 16 + 47) || readb(sram + ops + 16 + 48) < 1)
++			continue;
++
++		buf = readl(sram + ops + 68);
++		for (n = 0; buf && buf + 24 <= GS101_APM_SRAM_SIZE && n < 32; n++) {
++			if (readl(sram + buf + 12) == 0x58454c46 &&	/* "FLEX" */
++			    readl(sram + buf + 16) == 0x5f554d50 &&	/* "PMU_" */
++			    (readl(sram + buf + 20) & 0xffffff) == 0x474244) { /* "DBG" */
++				addr = readl(sram + buf + 4);
++				break;
++			}
++			buf = readl(sram + buf + 8);
++		}
++	}
++
++	if (!addr || addr >= GS101_APM_SRAM_SIZE - 0x400) {
++		iounmap(sram);
++		return -ENOENT;
++	}
++
++	gs101_flexpmu_dbg = sram + addr;
++	pr_info("gs101-sleep: FLEXPMU_DBG at SRAM+%#x\n", addr);
++	return 0;
++}
++
++static int gs101_flexpmu_show(struct seq_file *m, void *unused)
++{
++	int ret = gs101_flexpmu_find();
++	unsigned int i;
++
++	if (ret)
++		return ret;
++
++	seq_printf(m, "apsoc_sleep %u early_wakeup %u\n",
++		   gs101_flexpmu_read(FLEXPMU_AP_COUNT_SLEEP, 1),
++		   gs101_flexpmu_read(FLEXPMU_AP_COUNT_SLEEP, 0));
++	seq_printf(m, "mif_sleep %u\n",
++		   gs101_flexpmu_read(FLEXPMU_MIF_COUNT_SLEEP, 1));
++	seq_printf(m, "apsoc_sicd %u early_wakeup %u\n",
++		   gs101_flexpmu_read(FLEXPMU_AP_COUNT_SICD, 1),
++		   gs101_flexpmu_read(FLEXPMU_AP_COUNT_SICD, 0));
++	seq_printf(m, "mif_sicd %u\n",
++		   gs101_flexpmu_read(FLEXPMU_MIF_COUNT_SICD, 1));
++	seq_printf(m, "last wakeup_stat %#x %#x\n", gs101_wakeup_stat[0],
++		   gs101_wakeup_stat[1]);
++	seq_printf(m, "sicd done %u early %u\n", gs101_sicd_count, gs101_sicd_early);
++	for (i = 0; i < 4; i++) {
++		unsigned int b;
++
++		seq_printf(m, "sicd %s wakeup%s last %#x bits:",
++			   i / 2 ? "early" : "done", i % 2 ? "2" : "",
++			   gs101_sicd_ws_last[i / 2][i % 2]);
++		for (b = 0; b < 32; b++)
++			if (gs101_sicd_ws_hist[i / 2][i % 2][b])
++				seq_printf(m, " %u:%u", b,
++					   gs101_sicd_ws_hist[i / 2][i % 2][b]);
++		seq_puts(m, "\n");
++	}
++	for (i = 0; i < 43; i++)
++		seq_printf(m, "line%02u %08x %08x\n", i,
++			   gs101_flexpmu_read(i, 0), gs101_flexpmu_read(i, 1));
++	return 0;
++}
++DEFINE_SHOW_ATTRIBUTE(gs101_flexpmu);
++
++static const struct { const char *name; u32 off; } gs101_blks[] = {
++	{ "ALIVE", GS101_SUBBBLK_OFFSET_ALIVE },
++	{ "AOC", GS101_SUBBBLK_OFFSET_AOC },
++	{ "APM", GS101_SUBBBLK_OFFSET_APM },
++	{ "CMU", GS101_SUBBBLK_OFFSET_CMU },
++	{ "BUS0", GS101_SUBBBLK_OFFSET_BUS0 },
++	{ "BUS1", GS101_SUBBBLK_OFFSET_BUS1 },
++	{ "BUS2", GS101_SUBBBLK_OFFSET_BUS2 },
++	{ "CORE", GS101_SUBBBLK_OFFSET_CORE },
++	{ "EH", GS101_SUBBBLK_OFFSET_EH },
++	{ "CPUCL0", GS101_SUBBBLK_OFFSET_CPUCL0 },
++	{ "CPUCL1", GS101_SUBBBLK_OFFSET_CPUCL1 },
++	{ "CPUCL2", GS101_SUBBBLK_OFFSET_CPUCL2 },
++	{ "G3D", GS101_SUBBBLK_OFFSET_G3D },
++	{ "HSI0", GS101_SUBBBLK_OFFSET_HSI0 },
++	{ "HSI1", GS101_SUBBBLK_OFFSET_HSI1 },
++	{ "HSI2", GS101_SUBBBLK_OFFSET_HSI2 },
++	{ "DPU", GS101_SUBBBLK_OFFSET_DPU },
++	{ "DISP", GS101_SUBBBLK_OFFSET_DISP },
++	{ "G2D", GS101_SUBBBLK_OFFSET_G2D },
++	{ "MFC", GS101_SUBBBLK_OFFSET_MFC },
++	{ "CSIS", GS101_SUBBBLK_OFFSET_CSIS },
++	{ "PDP", GS101_SUBBBLK_OFFSET_PDP },
++	{ "DNS", GS101_SUBBBLK_OFFSET_DNS },
++	{ "G3AA", GS101_SUBBBLK_OFFSET_G3AA },
++	{ "IPP", GS101_SUBBBLK_OFFSET_IPP },
++	{ "ITP", GS101_SUBBBLK_OFFSET_ITP },
++	{ "MCSC", GS101_SUBBBLK_OFFSET_MCSC },
++	{ "GDC", GS101_SUBBBLK_OFFSET_GDC },
++	{ "TNR", GS101_SUBBBLK_OFFSET_TNR },
++	{ "BO", GS101_SUBBBLK_OFFSET_BO },
++	{ "TPU", GS101_SUBBBLK_OFFSET_TPU },
++	{ "MIF0", GS101_SUBBBLK_OFFSET_MIF0 },
++	{ "MIF1", GS101_SUBBBLK_OFFSET_MIF1 },
++	{ "MIF2", GS101_SUBBBLK_OFFSET_MIF2 },
++	{ "MIF3", GS101_SUBBBLK_OFFSET_MIF3 },
++	{ "MISC", GS101_SUBBBLK_OFFSET_MISC },
++	{ "PERIC0", GS101_SUBBBLK_OFFSET_PERIC0 },
++	{ "PERIC1", GS101_SUBBBLK_OFFSET_PERIC1 },
++	{ "S2D", GS101_SUBBBLK_OFFSET_S2D },
++};
++
++/*
++ * Switch a sub-block's power domain: "echo 'MFC 0' > blk". ACPM runs the
++ * actual sequence once CONFIGURATION changes. Experimental: nothing checks
++ * that no driver still uses the block.
++ */
++static ssize_t gs101_blk_write(struct file *file, const char __user *ubuf,
++			       size_t count, loff_t *ppos)
++{
++	char buf[32], name[16];
++	unsigned int i, on, t;
++
++	if (count >= sizeof(buf))
++		return -EINVAL;
++	if (copy_from_user(buf, ubuf, count))
++		return -EFAULT;
++	buf[count] = 0;
++	if (sscanf(buf, "%15s %u", name, &on) != 2)
++		return -EINVAL;
++
++	for (i = 0; i < ARRAY_SIZE(gs101_blks); i++) {
++		u32 off = gs101_blks[i].off;
++
++		if (strcmp(name, gs101_blks[i].name))
++			continue;
++		regmap_update_bits(pmu_context->pmureg,
++				   GS101_SUBBLK_CONFIGURATION(off), 1, !!on);
++		for (t = 0; t < 20000; t++) {
++			if ((pmu_raw_readl(GS101_SUBBLK_STATUS(off)) & 1) == !!on)
++				return count;
++			udelay(10);
++		}
++		return -ETIMEDOUT;
++	}
++	return -ENOENT;
++}
++
++static const struct file_operations gs101_blk_fops = {
++	.open = simple_open,
++	.write = gs101_blk_write,
++	.llseek = noop_llseek,
++};
++
++static int gs101_pmu_regs_show(struct seq_file *m, void *unused)
++{
++	static const struct { const char *name; u32 off; } regs[] = {
++		{ "WAKEUP_INT_EN", GS101_TOP_INT_EN },
++		{ "WAKEUP_STAT", GS101_WAKEUP_STAT },
++		{ "WAKEUP2_STAT", GS101_WAKEUP2_STAT },
++		{ "WAKEUP2_INT_EN", GS101_WAKEUP2_INT_EN },
++		{ "EINT_WAKEUP_MASK", GS101_EINT_WAKEUP_MASK },
++		{ "EINT_WAKEUP_MASK2", GS101_EINT_WAKEUP_MASK2 },
++		{ "EINT_WAKEUP_MASK3", GS101_EINT_WAKEUP_MASK3 },
++		{ "TOP_OUT", GS101_TOP_OUT },
++		{ "SYSTEM_CTRL", GS101_SYSTEM_CTRL },
++		{ "IDLE_IP0", 0x3e0 }, { "IDLE_IP1", 0x3e4 },
++		{ "IDLE_IP2", 0x3e8 }, { "IDLE_IP3", 0x3ec },
++		{ "IDLE_IP0_MASK", 0x3f0 }, { "IDLE_IP1_MASK", 0x3f4 },
++		{ "IDLE_IP2_MASK", 0x3f8 }, { "IDLE_IP3_MASK", 0x3fc },
++	};
++	unsigned int i;
++
++	for (i = 0; i < ARRAY_SIZE(regs); i++)
++		seq_printf(m, "%-18s %04x %08x\n", regs[i].name, regs[i].off,
++			   pmu_raw_readl(regs[i].off));
++	for (i = 0; i < 8; i++)
++		seq_printf(m, "CPU_INFORM%u        %04x %08x\n", i,
++			   GS101_CPU_INFORM(i), pmu_raw_readl(GS101_CPU_INFORM(i)));
++	/* power state of every sub-block */
++	for (i = 0; i < ARRAY_SIZE(gs101_blks); i++)
++		seq_printf(m, "blk %-8s %04x conf %08x status %08x states %08x\n",
++			   gs101_blks[i].name, gs101_blks[i].off,
++			   pmu_raw_readl(GS101_SUBBLK_CONFIGURATION(gs101_blks[i].off)),
++			   pmu_raw_readl(GS101_SUBBLK_STATUS(gs101_blks[i].off)),
++			   pmu_raw_readl(GS101_SUBBLK_STATES(gs101_blks[i].off)));
++	return 0;
++}
++DEFINE_SHOW_ATTRIBUTE(gs101_pmu_regs);
++
++static void gs101_sleep_init(struct device *dev)
++{
++	struct dentry *dir;
++	int ret;
++
++	if (!pmu_context->pmuintrgen)
++		return;
++
++	ret = gs101_seq_map(gs101_enter_sleep, ARRAY_SIZE(gs101_enter_sleep));
++	if (!ret)
++		ret = gs101_seq_map(gs101_exit_sleep,
++				    ARRAY_SIZE(gs101_exit_sleep));
++	if (!ret)
++		ret = gs101_seq_map(gs101_earlywkup_sleep,
++				    ARRAY_SIZE(gs101_earlywkup_sleep));
++	if (!ret)
++		ret = gs101_seq_map(gs101_exit_sicd, ARRAY_SIZE(gs101_exit_sicd));
++	if (!ret)
++		ret = gs101_seq_map(gs101_earlywkup_sicd,
++				    ARRAY_SIZE(gs101_earlywkup_sicd));
++	if (ret) {
++		dev_warn(dev, "gs101 sleep sequences unavailable: %d\n", ret);
++		return;
++	}
++
++	register_syscore(&gs101_sleep_syscore);
++	gs101_sleep_ready = true;
++
++	dir = debugfs_create_dir("gs101-pmu", NULL);
++	debugfs_create_file("flexpmu", 0400, dir, NULL, &gs101_flexpmu_fops);
++	debugfs_create_file("regs", 0400, dir, NULL, &gs101_pmu_regs_fops);
++	debugfs_create_file("blk", 0200, dir, NULL, &gs101_blk_fops);
++}
++
+ static int exynos_cpupm_suspend_noirq(struct device *dev)
+ {
+ 	/*
+@@ -562,8 +1208,12 @@ static int exynos_cpupm_suspend_noirq(struct device *dev)
+ 	 * doing the ACPM C2 hint. Without it CPU_SUSPEND returns at once
+ 	 * and the s2idle loop spins.
+ 	 */
+-	if (pm_suspend_target_state == PM_SUSPEND_TO_IDLE)
++	if (pm_suspend_target_state == PM_SUSPEND_TO_IDLE) {
++		raw_spin_lock(&pmu_context->cpupm_lock);
++		gs101_in_s2idle = true;
++		raw_spin_unlock(&pmu_context->cpupm_lock);
+ 		return 0;
++	}
+ 
+ 	raw_spin_lock(&pmu_context->cpupm_lock);
+ 	pmu_context->sys_insuspend = true;
+@@ -575,6 +1225,7 @@ static int exynos_cpupm_resume_noirq(struct device *dev)
+ {
+ 	raw_spin_lock(&pmu_context->cpupm_lock);
+ 	pmu_context->sys_insuspend = false;
++	gs101_in_s2idle = false;
+ 	raw_spin_unlock(&pmu_context->cpupm_lock);
+ 	return 0;
+ }
+diff --git a/drivers/soc/samsung/gs101-sleep-seq.h b/drivers/soc/samsung/gs101-sleep-seq.h
+new file mode 100644
+index 000000000..2a3045f49
+--- /dev/null
++++ b/drivers/soc/samsung/gs101-sleep-seq.h
+@@ -0,0 +1,103 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * gs101 system power mode sequences, generated by tools/gen-sleep-seq.py
++ * from Google's vendor kernel (cal-if/gs101/flexpmu_cal_system_gs101.h).
++ */
++
++static const struct gs101_seq gs101_enter_sleep[] = {
++	{ GS101_SEQ_WRITE, 0x17470200, 0x00000001, 0x00000001, 0x00000000, 0xffffffff, 0x00000000, 0x00000000 }, /* GRP2_INTR_BID_ENABLE */
++	{ GS101_SEQ_CLEAR_PEND, 0x1747010c, 0x00000001, 0x00000001, 0x17470108, 0x00000001, 0x00000001, 0x00000000 }, /* GRP1_INTR_BID_CLEAR */
++	{ GS101_SEQ_WRITE, 0x17461044, 0x00000008, 0x00000008, 0x00000000, 0xffffffff, 0x00000000, 0x00000000 }, /* CLUSTER0_CPU0_INT_EN */
++};
++
++static const struct gs101_seq gs101_exit_sleep[] = {
++	{ GS101_SEQ_WRITE, 0x17463944, 0xffffffff, 0x00000000, 0x00000000, 0xffffffff, 0x00000000, 0x00000000 }, /* WAKEUP_INT_EN */
++	{ GS101_SEQ_WRITE, 0x17463964, 0xffffffff, 0x00000000, 0x00000000, 0xffffffff, 0x00000000, 0x00000000 }, /* WAKEUP2_INT_EN */
++	{ GS101_SEQ_CLEAR_PEND, 0x17471b0c, 0xffffffff, 0xffffffff, 0x17471b08, 0xffffffff, 0x00000000, 0x00000000 }, /* GRP27_INTR_BID_CLEAR */
++	{ GS101_SEQ_CLEAR_PEND, 0x17471f0c, 0xffffffff, 0xffffffff, 0x17471f08, 0xffffffff, 0x00000000, 0x00000000 }, /* GRP31_INTR_BID_CLEAR */
++	{ GS101_SEQ_WRITE, 0x17470200, 0x00000001, 0x00000000, 0x00000000, 0xffffffff, 0x00000000, 0x00000000 }, /* GRP2_INTR_BID_ENABLE */
++	{ GS101_SEQ_CLEAR_PEND, 0x1747020c, 0x00000001, 0x00000001, 0x17470208, 0x00000001, 0x00000001, 0x00000000 }, /* GRP2_INTR_BID_CLEAR */
++	{ GS101_SEQ_WRITE, 0x17461044, 0x00000008, 0x00000000, 0x00000000, 0xffffffff, 0x00000000, 0x00000000 }, /* CLUSTER0_CPU0_INT_EN */
++	{ GS101_SEQ_CHECK_SKIP, 0x10000000, 0xffffffff, 0x09845000, 0x17462904, 0x00000001, 0x00000001, 0x00000000 }, /* PLL_CON3_PLL_TPU */
++	{ GS101_SEQ_WAIT, 0x1cc0010c, 0x20000000, 0x20000000, 0x17462904, 0x00000001, 0x00000001, 0x00000000 }, /* PLL_CON3_PLL_TPU */
++	{ GS101_SEQ_CHECK_SKIP, 0x10000000, 0xffffffff, 0x09845000, 0x17462084, 0x00000001, 0x00000001, 0x00000000 }, /* PLL_CON3_PLL_USB */
++	{ GS101_SEQ_WAIT, 0x1100014c, 0x20000000, 0x20000000, 0x17462084, 0x00000001, 0x00000001, 0x00000000 }, /* PLL_CON3_PLL_USB */
++	{ GS101_SEQ_WRITE, 0x1e080880, 0x00000003, 0x00000003, 0x00000000, 0xffffffff, 0x00000000, 0x00000000 }, /* EARLY_WAKEUP_DPU_CTRL */
++	{ GS101_SEQ_WRITE, 0x1e080898, 0xffffffff, 0x000000fe, 0x00000000, 0xffffffff, 0x00000000, 0x00000000 }, /* EARLY_WAKEUP_DPU_DEST */
++	{ GS101_SEQ_COND_WRITE, 0x2084623c, 0x80000000, 0x00000000, 0x10000000, 0xffffffff, 0x09845000, 0x00000000 }, /* ABIed_ABIed_BLK_MIF_wrapper_SMC0_PWRMGMT_BUNDLE_PwrMgmtMode_AFIFO_DRCG_DIS */
++	{ GS101_SEQ_COND_WRITE, 0x2094623c, 0x80000000, 0x00000000, 0x10000000, 0xffffffff, 0x09845000, 0x00000000 }, /* ABIed_ABIed_BLK_MIF_wrapper_SMC1_PWRMGMT_BUNDLE_PwrMgmtMode_AFIFO_DRCG_DIS */
++	{ GS101_SEQ_COND_WRITE, 0x20a4623c, 0x80000000, 0x00000000, 0x10000000, 0xffffffff, 0x09845000, 0x00000000 }, /* ABIed_ABIed_BLK_MIF_wrapper_SMC2_PWRMGMT_BUNDLE_PwrMgmtMode_AFIFO_DRCG_DIS */
++	{ GS101_SEQ_COND_WRITE, 0x20b4623c, 0x80000000, 0x00000000, 0x10000000, 0xffffffff, 0x09845000, 0x00000000 }, /* ABIed_ABIed_BLK_MIF_wrapper_SMC3_PWRMGMT_BUNDLE_PwrMgmtMode_AFIFO_DRCG_DIS */
++	{ GS101_SEQ_COND_WRITE, 0x2084f23c, 0x80000000, 0x00000000, 0x10000000, 0xffffffff, 0x09845001, 0x00000000 }, /* ABIed_ABIed_BLK_MIF_wrapper_SMC0_PWRMGMT_BUNDLE_PwrMgmtMode_AFIFO_DRCG_DIS */
++	{ GS101_SEQ_COND_WRITE, 0x2094f23c, 0x80000000, 0x00000000, 0x10000000, 0xffffffff, 0x09845001, 0x00000000 }, /* ABIed_ABIed_BLK_MIF_wrapper_SMC1_PWRMGMT_BUNDLE_PwrMgmtMode_AFIFO_DRCG_DIS */
++	{ GS101_SEQ_COND_WRITE, 0x20a4f23c, 0x80000000, 0x00000000, 0x10000000, 0xffffffff, 0x09845001, 0x00000000 }, /* ABIed_ABIed_BLK_MIF_wrapper_SMC2_PWRMGMT_BUNDLE_PwrMgmtMode_AFIFO_DRCG_DIS */
++	{ GS101_SEQ_COND_WRITE, 0x20b4f23c, 0x80000000, 0x00000000, 0x10000000, 0xffffffff, 0x09845001, 0x00000000 }, /* ABIed_ABIed_BLK_MIF_wrapper_SMC3_PWRMGMT_BUNDLE_PwrMgmtMode_AFIFO_DRCG_DIS */
++	{ GS101_SEQ_WRITE, 0x17420104, 0xffffffff, 0xffffffff, 0x00000000, 0xffffffff, 0x00000000, 0x00000000 }, /* SYSREG_APM_BUS_COMPONENT_DRCG_EN */
++	{ GS101_SEQ_COND_WRITE, 0x1e820104, 0xffffffff, 0xffffffff, 0x17461a04, 0x00000001, 0x00000001, 0x00000000 }, /* SYSREG_BUS0_BUS_COMPONENT_DRCG_EN */
++	{ GS101_SEQ_COND_WRITE, 0x1f020104, 0xffffffff, 0xffffffff, 0x17461a84, 0x00000001, 0x00000001, 0x00000000 }, /* SYSREG_BUS1_BUS_COMPONENT_DRCG_EN */
++	{ GS101_SEQ_COND_WRITE, 0x20020104, 0xffffffff, 0xffffffff, 0x17461b04, 0x00000001, 0x00000001, 0x00000000 }, /* SYSREG_BUS2_BUS_COMPONENT_DRCG_EN */
++	{ GS101_SEQ_WRITE, 0x1e020104, 0xffffffff, 0xffffffff, 0x00000000, 0xffffffff, 0x00000000, 0x00000000 }, /* SYSREG_CORE_BUS_COMPONENT0_DRCG_EN */
++	{ GS101_SEQ_WRITE, 0x1e020108, 0xffffffff, 0xffffffff, 0x00000000, 0xffffffff, 0x00000000, 0x00000000 }, /* SYSREG_CORE_BUS_COMPONENT1_DRCG_EN */
++	{ GS101_SEQ_WRITE, 0x20c40104, 0xffffffff, 0xffffffff, 0x00000000, 0xffffffff, 0x00000000, 0x00000000 }, /* SYSREG_CPUCL0_BUS_COMPONENT_DRCG_EN */
++	{ GS101_SEQ_WRITE, 0x20c4010c, 0xffffffff, 0xffffffff, 0x00000000, 0xffffffff, 0x00000000, 0x00000000 }, /* SYSREG_CPUCL0_BUS_COMPONENT_DRCG_EN_INT */
++	{ GS101_SEQ_COND_WRITE, 0x1c420104, 0xffffffff, 0xffffffff, 0x17462004, 0x00000001, 0x00000001, 0x00000000 }, /* SYSREG_G3D_BUS_COMPONENT_DRCG_EN */
++	{ GS101_SEQ_WRITE, 0x11820104, 0xffffffff, 0xffffffff, 0x00000000, 0xffffffff, 0x00000000, 0x00000000 }, /* SYSREG_HSI1_BUS_COMPONENT_DRCG_EN */
++	{ GS101_SEQ_WRITE, 0x14420104, 0xffffffff, 0xffffffff, 0x00000000, 0xffffffff, 0x00000000, 0x00000000 }, /* SYSREG_HSI2_BUS_COMPONENT_DRCG_EN */
++	{ GS101_SEQ_WRITE, 0x20820104, 0xffffffff, 0xffffffff, 0x00000000, 0xffffffff, 0x00000000, 0x00000000 }, /* SYSREG_MIF0_BUS_COMPONENT_DRCG_EN */
++	{ GS101_SEQ_WRITE, 0x20920104, 0xffffffff, 0xffffffff, 0x00000000, 0xffffffff, 0x00000000, 0x00000000 }, /* SYSREG_MIF1_BUS_COMPONENT_DRCG_EN */
++	{ GS101_SEQ_WRITE, 0x20a20104, 0xffffffff, 0xffffffff, 0x00000000, 0xffffffff, 0x00000000, 0x00000000 }, /* SYSREG_MIF2_BUS_COMPONENT_DRCG_EN */
++	{ GS101_SEQ_WRITE, 0x20b20104, 0xffffffff, 0xffffffff, 0x00000000, 0xffffffff, 0x00000000, 0x00000000 }, /* SYSREG_MIF3_BUS_COMPONENT_DRCG_EN */
++	{ GS101_SEQ_WRITE, 0x10820104, 0xffffffff, 0xffffffff, 0x00000000, 0xffffffff, 0x00000000, 0x00000000 }, /* SYSREG_PERIC0_BUS_COMPONENT_DRCG_EN */
++	{ GS101_SEQ_WRITE, 0x10c20104, 0xffffffff, 0xffffffff, 0x00000000, 0xffffffff, 0x00000000, 0x00000000 }, /* SYSREG_PERIC1_BUS_COMPONENT_DRCG_EN */
++	{ GS101_SEQ_WRITE, 0x10030104, 0xffffffff, 0xffffffff, 0x00000000, 0xffffffff, 0x00000000, 0x00000000 }, /* SYSREG_MISC_BUS_COMPONENT_DRCG_EN */
++	{ GS101_SEQ_WRITE, 0x147011b4, 0x00000100, 0x00000100, 0x00000000, 0xffffffff, 0x00000000, 0x00000000 }, /* UFS_HCI_WRAP_UFS_PH_MISC_UFSP_DRCG_EN */
++	{ GS101_SEQ_SET_BIT_ATOMIC, 0x17463920, 0xffffffff, 0x00000007, 0x00000000, 0xffffffff, 0x00000000, 0x00000000 }, /* TOP_OUT */
++	{ GS101_SEQ_SET_BIT_ATOMIC, 0x17463920, 0xffffffff, 0x00000009, 0x00000000, 0xffffffff, 0x00000000, 0x00000000 }, /* TOP_OUT */
++	{ GS101_SEQ_SET_BIT_ATOMIC, 0x17463920, 0xffffffff, 0x0000000b, 0x00000000, 0xffffffff, 0x00000000, 0x00000000 }, /* TOP_OUT */
++	{ GS101_SEQ_SET_BIT_ATOMIC, 0x17463920, 0xffffffff, 0x0000000c, 0x00000000, 0xffffffff, 0x00000000, 0x00000000 }, /* TOP_OUT */
++	{ GS101_SEQ_SET_BIT_ATOMIC, 0x17463920, 0xffffffff, 0x0000000d, 0x00000000, 0xffffffff, 0x00000000, 0x00000000 }, /* TOP_OUT */
++	{ GS101_SEQ_SET_BIT_ATOMIC, 0x17463920, 0xffffffff, 0x0000000e, 0x00000000, 0xffffffff, 0x00000000, 0x00000000 }, /* TOP_OUT */
++	{ GS101_SEQ_WRITE, 0x17420108, 0x00000001, 0x00000000, 0x00000000, 0xffffffff, 0x00000000, 0x00000000 }, /* SYSREG_APM_MEMCLK */
++	{ GS101_SEQ_WRITE, 0x1e820108, 0x00000001, 0x00000000, 0x00000000, 0xffffffff, 0x00000000, 0x00000000 }, /* SYSREG_BUS0_MEMCLK */
++	{ GS101_SEQ_WRITE, 0x1f020108, 0x00000001, 0x00000000, 0x00000000, 0xffffffff, 0x00000000, 0x00000000 }, /* SYSREG_BUS1_MEMCLK */
++	{ GS101_SEQ_WRITE, 0x20020108, 0x00000001, 0x00000000, 0x00000000, 0xffffffff, 0x00000000, 0x00000000 }, /* SYSREG_BUS2_MEMCLK */
++	{ GS101_SEQ_WRITE, 0x1e020108, 0x00000001, 0x00000000, 0x00000000, 0xffffffff, 0x00000000, 0x00000000 }, /* SYSREG_CORE_MEMCLK */
++	{ GS101_SEQ_WRITE, 0x20c40108, 0x00000001, 0x00000000, 0x00000000, 0xffffffff, 0x00000000, 0x00000000 }, /* SYSREG_CPUCL0_MEMCLK */
++	{ GS101_SEQ_WRITE, 0x11820108, 0x00000001, 0x00000000, 0x00000000, 0xffffffff, 0x00000000, 0x00000000 }, /* SYSREG_HSI1_MEMCLK */
++	{ GS101_SEQ_WRITE, 0x14420108, 0x00000001, 0x00000000, 0x00000000, 0xffffffff, 0x00000000, 0x00000000 }, /* SYSREG_HSI2_MEMCLK */
++	{ GS101_SEQ_WRITE, 0x20820108, 0x00000001, 0x00000000, 0x00000000, 0xffffffff, 0x00000000, 0x00000000 }, /* SYSREG_MIF0_MEMCLK */
++	{ GS101_SEQ_WRITE, 0x20920108, 0x00000001, 0x00000000, 0x00000000, 0xffffffff, 0x00000000, 0x00000000 }, /* SYSREG_MIF1_MEMCLK */
++	{ GS101_SEQ_WRITE, 0x20a20108, 0x00000001, 0x00000000, 0x00000000, 0xffffffff, 0x00000000, 0x00000000 }, /* SYSREG_MIF2_MEMCLK */
++	{ GS101_SEQ_WRITE, 0x20b20108, 0x00000001, 0x00000000, 0x00000000, 0xffffffff, 0x00000000, 0x00000000 }, /* SYSREG_MIF3_MEMCLK */
++	{ GS101_SEQ_WRITE, 0x10030108, 0x00000001, 0x00000000, 0x00000000, 0xffffffff, 0x00000000, 0x00000000 }, /* SYSREG_MISC_MEMCLK */
++};
++
++static const struct gs101_seq gs101_earlywkup_sleep[] = {
++	{ GS101_SEQ_WRITE, 0x17463944, 0xffffffff, 0x00000000, 0x00000000, 0xffffffff, 0x00000000, 0x00000000 }, /* WAKEUP_INT_EN */
++	{ GS101_SEQ_WRITE, 0x17463964, 0xffffffff, 0x00000000, 0x00000000, 0xffffffff, 0x00000000, 0x00000000 }, /* WAKEUP2_INT_EN */
++	{ GS101_SEQ_CLEAR_PEND, 0x17471b0c, 0xffffffff, 0xffffffff, 0x17471b08, 0xffffffff, 0x00000000, 0x00000000 }, /* GRP27_INTR_BID_CLEAR */
++	{ GS101_SEQ_CLEAR_PEND, 0x17471f0c, 0xffffffff, 0xffffffff, 0x17471f08, 0xffffffff, 0x00000000, 0x00000000 }, /* GRP31_INTR_BID_CLEAR */
++	{ GS101_SEQ_WRITE, 0x17470200, 0x00000001, 0x00000000, 0x00000000, 0xffffffff, 0x00000000, 0x00000000 }, /* GRP2_INTR_BID_ENABLE */
++	{ GS101_SEQ_CLEAR_PEND, 0x1747010c, 0x00000001, 0x00000001, 0x17470108, 0x00000001, 0x00000001, 0x00000000 }, /* GRP1_INTR_BID_CLEAR */
++	{ GS101_SEQ_WRITE, 0x17461044, 0x00000008, 0x00000000, 0x00000000, 0xffffffff, 0x00000000, 0x00000000 }, /* CLUSTER0_CPU0_INT_EN */
++	{ GS101_SEQ_WRITE, 0x1e080880, 0x00000003, 0x00000003, 0x00000000, 0xffffffff, 0x00000000, 0x00000000 }, /* EARLY_WAKEUP_DPU_CTRL */
++	{ GS101_SEQ_WRITE, 0x1e080898, 0xffffffff, 0x000000fe, 0x00000000, 0xffffffff, 0x00000000, 0x00000000 }, /* EARLY_WAKEUP_DPU_DEST */
++	{ GS101_SEQ_WRITE, 0x17463a10, 0x00004000, 0x00000000, 0x00000000, 0xffffffff, 0x00000000, 0x00000000 }, /* SYSTEM_CTRL */
++	{ GS101_SEQ_CLEAR_PEND, 0x1747040c, 0x00000001, 0x00000001, 0x17470408, 0x00000001, 0x00000001, 0x00000000 }, /* GRP4_INTR_BID_CLEAR */
++};
++
++static const struct gs101_seq gs101_exit_sicd[] = {
++	{ GS101_SEQ_WRITE, 0x17463944, 0xffffffff, 0x00000000, 0x00000000, 0xffffffff, 0x00000000, 0x00000000 }, /* WAKEUP_INT_EN */
++	{ GS101_SEQ_WRITE, 0x17463964, 0xffffffff, 0x00000000, 0x00000000, 0xffffffff, 0x00000000, 0x00000000 }, /* WAKEUP2_INT_EN */
++	{ GS101_SEQ_CLEAR_PEND, 0x17471b0c, 0xffffffff, 0xffffffff, 0x17471b08, 0xffffffff, 0x00000000, 0x00000000 }, /* GRP27_INTR_BID_CLEAR */
++	{ GS101_SEQ_CLEAR_PEND, 0x17471f0c, 0xffffffff, 0xffffffff, 0x17471f08, 0xffffffff, 0x00000000, 0x00000000 }, /* GRP31_INTR_BID_CLEAR */
++};
++
++static const struct gs101_seq gs101_earlywkup_sicd[] = {
++	{ GS101_SEQ_WRITE, 0x17463944, 0xffffffff, 0x00000000, 0x00000000, 0xffffffff, 0x00000000, 0x00000000 }, /* WAKEUP_INT_EN */
++	{ GS101_SEQ_WRITE, 0x17463964, 0xffffffff, 0x00000000, 0x00000000, 0xffffffff, 0x00000000, 0x00000000 }, /* WAKEUP2_INT_EN */
++	{ GS101_SEQ_CLEAR_PEND, 0x17471b0c, 0xffffffff, 0xffffffff, 0x17471b08, 0xffffffff, 0x00000000, 0x00000000 }, /* GRP27_INTR_BID_CLEAR */
++	{ GS101_SEQ_CLEAR_PEND, 0x17471f0c, 0xffffffff, 0xffffffff, 0x17471f08, 0xffffffff, 0x00000000, 0x00000000 }, /* GRP31_INTR_BID_CLEAR */
++	{ GS101_SEQ_WRITE, 0x17463a10, 0x00004000, 0x00000000, 0x00000000, 0xffffffff, 0x00000000, 0x00000000 }, /* SYSTEM_CTRL */
++	{ GS101_SEQ_CLEAR_PEND, 0x1747040c, 0x00000001, 0x00000001, 0x17470408, 0x00000001, 0x00000001, 0x00000000 }, /* GRP4_INTR_BID_CLEAR */
++};

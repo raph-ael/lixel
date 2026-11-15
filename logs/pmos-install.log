@@ -1,0 +1,55 @@
+[22:06:51] [92m*** (1/4) PREPARE NATIVE CHROOT ***[0m
+[22:06:52] Update package index for x86_64 (5 file(s))[0m
+[22:06:54] Download http://cdn.alpinelinux.org/edge/main/x86_64/apk-tools-static-3.0.9-r0.apk[0m
+[22:06:55] (native) Creating chroot[0m
+[22:06:59] (native) install cryptsetup util-linux parted[0m
+[22:07:01] [92m*** (2/4) CREATE DEVICE ROOTFS ("google-oriole") ***[0m
+[22:07:02] (native) install qemu-aarch64[0m
+[22:07:03] Register qemu binfmt (aarch64)[0m
+[22:07:03] (rootfs_google-oriole) Creating chroot[0m
+[22:07:04] Update package index for aarch64 (5 file(s))[0m
+[22:07:14] (rootfs_google-oriole) install postmarketos-base-systemd[0m
+[22:08:59] (rootfs_google-oriole) install postmarketos-base device-google-oriole postmarketos-ui-phosh postmarketos-base-nofde decibels fprintd gnome-maps nautilus papers calls tuned-ppd gvfs-full gst-plugins-good loupe mobile-config-firefox firefox-esr font-twemoji sudo-rs gnome-calculator gnome-console flatpak cups gnome-contacts snapshot gst-libav gst-plugins-rs-dav1d font-droid phosh-tour lang showtime gst-plugins-bad gnome-calendar font-droid-nonlatin gnome-user-share lpa-gtk chatty gnome-clocks vvmplayer gnome-weather gnome-text-editor phosh-mobile-settings rygel g4music postmarketos-tweaks-setting-definitions ttyescape[0m
+[22:12:32] (rootfs_google-oriole) install postmarketos-mkinitfs[0m
+[22:12:33] (rootfs_google-oriole) mkinitfs[0m
+[22:12:41]  [92m*** SET LOGIN PASSWORD FOR: 'user' ***[0m
+[22:12:51] [92m*** (3/4) PREPARE INSTALL BLOCKDEVICE ***[0m
+[22:12:52] (native) create google-oriole.img (3010M)[0m
+[22:12:52] (native) mount /dev/install (google-oriole.img)[0m
+[22:12:52] (native) partition /dev/install (boot: 512M)[0m
+[22:12:53] Mounting partitions of /dev/loop11 inside the chroot[0m
+[22:12:53] (native) install e2fsprogs[0m
+[22:12:54] (native) format /dev/installp2 (pmOS_root, ext4)[0m
+[22:12:54] (native) mount /dev/installp2 to /mnt/install[0m
+[22:12:54] (native) install e2fsprogs[0m
+[22:12:54] (native) format /dev/installp1 (pmOS_boot, ext2)[0m
+[22:12:55] (native) create /etc/fstab[0m
+[22:12:55] (rootfs_google-oriole) mkinitfs[0m
+[22:13:05] [92m*** (4/4) FILL INSTALL BLOCKDEVICE ***[0m
+[22:13:05] (native) copy rootfs_google-oriole to /mnt/install/[0m
+[22:13:11] [0m
+[22:13:11] [92m*** FLASHING INFORMATION ***[0m
+[22:13:11] Run the following to flash your installation to the target device:[0m
+[22:13:11] * pmbootstrap flasher flash_rootfs[0m
+[22:13:11]   Flashes the generated rootfs image to your device:[0m
+[22:13:11]   /home/raphael/.local/var/pmbootstrap-lixel/chroot_native/home/pmos/rootfs/google-oriole.img[0m
+[22:13:11]   ([94mNOTE:[0m This file has a partition table, which contains /boot and / subpartitions. That way we don't need to change the partition layout on your device.)[0m
+[22:13:11] * pmbootstrap flasher flash_vbmeta[0m
+[22:13:11]   Flashes vbmeta image with verification disabled flag.[0m
+[22:13:11] * pmbootstrap flasher flash_kernel[0m
+[22:13:11]   Flashes the kernel + initramfs to your device:[0m
+[22:13:11]   /home/raphael/.local/var/pmbootstrap-lixel/chroot_rootfs_google-oriole/boot[0m
+[22:13:11]   ([94mNOTE:[0m fastboot also supports booting the kernel/initramfs directly without flashing. Use 'pmbootstrap flasher boot' to do that.)[0m
+[22:13:11] * If the above steps do not work, you can also create symlinks to the generated files with 'pmbootstrap export' and flash outside of pmbootstrap.[0m
+[22:13:11] [0m
+[22:13:11] [92m*** SSH DAEMON INFORMATION ***[0m
+[22:13:11] SSH daemon is enabled (disable with --no-sshd).[0m
+[22:13:11] Login as 'user' with the password given during installation.[0m
+[22:13:11] [0m
+[22:13:11] [92m*** FIREWALL INFORMATION ***[0m
+[22:13:11] Firewall is enabled, but may not work (couldn't determine if kernel supports nftables).[0m
+[22:13:11] For more information: https://postmarketos.org/firewall[0m
+[22:13:11] [0m
+[22:13:11] [94mNOTE:[0m chroot is still active (use 'pmbootstrap shutdown' as necessary)[0m
+[22:13:11] [92mDONE![0m[0m
+EXIT 0

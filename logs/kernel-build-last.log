@@ -1,0 +1,176 @@
+make: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux“ wird betreten
+  CC      drivers/soc/samsung/exynos-pmu.o
+  AR      drivers/soc/samsung/built-in.a
+  AR      drivers/soc/built-in.a
+  AR      drivers/built-in.a
+  AR      built-in.a
+  AR      built-in-fixup.a
+  COPY    vmlinux.a
+  LD      vmlinux.o
+  MODPOST Module.symvers
+  UPD     include/generated/utsversion.h
+  CC      init/version-timestamp.o
+  KSYMS   .tmp_vmlinux0.kallsyms.S
+  AS      .tmp_vmlinux0.kallsyms.o
+  LD      .tmp_vmlinux1
+  NM      .tmp_vmlinux1.syms
+  KSYMS   .tmp_vmlinux1.kallsyms.S
+  AS      .tmp_vmlinux1.kallsyms.o
+  LD      .tmp_vmlinux2
+  NM      .tmp_vmlinux2.syms
+  KSYMS   .tmp_vmlinux2.kallsyms.S
+  AS      .tmp_vmlinux2.kallsyms.o
+  LD      vmlinux.unstripped
+  NM      System.map
+  SORTTAB vmlinux.unstripped
+  OBJCOPY vmlinux
+  GEN     modules.builtin.modinfo
+  GEN     modules.builtin
+  OBJCOPY arch/arm64/boot/Image
+  LZ4     arch/arm64/boot/Image.lz4
+make: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux“ wird verlassen
+make: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux“ wird betreten
+make[1]: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux/bcmdhd“ wird betreten
+Kbuild:31: : ** Regular in-tree build BCMDHD_ROOT=/home/raphael/orca/projects/lixel/kernel/linux/bcmdhd**
+Kbuild:31: : ** Regular in-tree build BCMDHD_ROOT=/home/raphael/orca/projects/lixel/kernel/linux/bcmdhd**
+  MODPOST Module.symvers
+make[1]: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux/bcmdhd“ wird verlassen
+make: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux“ wird verlassen
+make: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux“ wird betreten
+make[1]: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux/bcmdhd“ wird betreten
+  INSTALL /home/raphael/orca/projects/lixel/kernel/out/usr/lib/modules/7.2.0-rc3+/updates/bcmdhd.ko
+  STRIP   /home/raphael/orca/projects/lixel/kernel/out/usr/lib/modules/7.2.0-rc3+/updates/bcmdhd.ko
+  DEPMOD  /home/raphael/orca/projects/lixel/kernel/out/usr/lib/modules/7.2.0-rc3+
+make[1]: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux/bcmdhd“ wird verlassen
+make: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux“ wird verlassen
+make: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux“ wird betreten
+make[1]: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux/samsung-iommu“ wird betreten
+  MODPOST Module.symvers
+WARNING: modpost: missing MODULE_DESCRIPTION() in samsung_iommu.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in samsung-iommu-group.o
+make[1]: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux/samsung-iommu“ wird verlassen
+make: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux“ wird verlassen
+make: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux“ wird betreten
+make[1]: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux/samsung-iommu“ wird betreten
+  INSTALL /home/raphael/orca/projects/lixel/kernel/out/usr/lib/modules/7.2.0-rc3+/updates/samsung_iommu.ko
+  INSTALL /home/raphael/orca/projects/lixel/kernel/out/usr/lib/modules/7.2.0-rc3+/updates/samsung-iommu-group.ko
+  STRIP   /home/raphael/orca/projects/lixel/kernel/out/usr/lib/modules/7.2.0-rc3+/updates/samsung_iommu.ko
+  STRIP   /home/raphael/orca/projects/lixel/kernel/out/usr/lib/modules/7.2.0-rc3+/updates/samsung-iommu-group.ko
+  DEPMOD  /home/raphael/orca/projects/lixel/kernel/out/usr/lib/modules/7.2.0-rc3+
+make[1]: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux/samsung-iommu“ wird verlassen
+make: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux“ wird verlassen
+make: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux“ wird betreten
+make[1]: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux/modem“ wird betreten
+  MODPOST Module.symvers
+make[1]: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux/modem“ wird verlassen
+make: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux“ wird verlassen
+make: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux“ wird betreten
+make[1]: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux/modem“ wird betreten
+  INSTALL /home/raphael/orca/projects/lixel/kernel/out/usr/lib/modules/7.2.0-rc3+/updates/shm_ipc.ko
+  INSTALL /home/raphael/orca/projects/lixel/kernel/out/usr/lib/modules/7.2.0-rc3+/updates/boot_device_spi.ko
+  INSTALL /home/raphael/orca/projects/lixel/kernel/out/usr/lib/modules/7.2.0-rc3+/updates/cpif.ko
+  STRIP   /home/raphael/orca/projects/lixel/kernel/out/usr/lib/modules/7.2.0-rc3+/updates/shm_ipc.ko
+  STRIP   /home/raphael/orca/projects/lixel/kernel/out/usr/lib/modules/7.2.0-rc3+/updates/boot_device_spi.ko
+  STRIP   /home/raphael/orca/projects/lixel/kernel/out/usr/lib/modules/7.2.0-rc3+/updates/cpif.ko
+  DEPMOD  /home/raphael/orca/projects/lixel/kernel/out/usr/lib/modules/7.2.0-rc3+
+make[1]: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux/modem“ wird verlassen
+make: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux“ wird verlassen
+make: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux“ wird betreten
+make[1]: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux/gps“ wird betreten
+  MODPOST Module.symvers
+make[1]: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux/gps“ wird verlassen
+make: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux“ wird verlassen
+make: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux“ wird betreten
+make[1]: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux/gps“ wird betreten
+  INSTALL /home/raphael/orca/projects/lixel/kernel/out/usr/lib/modules/7.2.0-rc3+/updates/bcm47765.ko
+  INSTALL /home/raphael/orca/projects/lixel/kernel/out/usr/lib/modules/7.2.0-rc3+/updates/bbd_pps_gpio.ko
+  STRIP   /home/raphael/orca/projects/lixel/kernel/out/usr/lib/modules/7.2.0-rc3+/updates/bcm47765.ko
+  STRIP   /home/raphael/orca/projects/lixel/kernel/out/usr/lib/modules/7.2.0-rc3+/updates/bbd_pps_gpio.ko
+  DEPMOD  /home/raphael/orca/projects/lixel/kernel/out/usr/lib/modules/7.2.0-rc3+
+make[1]: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux/gps“ wird verlassen
+make: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux“ wird verlassen
+make: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux“ wird betreten
+make[1]: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux/trusty“ wird betreten
+  MODPOST Module.symvers
+make[1]: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux/trusty“ wird verlassen
+make: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux“ wird verlassen
+make: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux“ wird betreten
+make[1]: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux/trusty“ wird betreten
+  INSTALL /home/raphael/orca/projects/lixel/kernel/out/usr/lib/modules/7.2.0-rc3+/updates/drivers/trusty/trusty-core.ko
+  INSTALL /home/raphael/orca/projects/lixel/kernel/out/usr/lib/modules/7.2.0-rc3+/updates/drivers/trusty/trusty-log.ko
+  INSTALL /home/raphael/orca/projects/lixel/kernel/out/usr/lib/modules/7.2.0-rc3+/updates/drivers/trusty/trusty-virtio.ko
+  INSTALL /home/raphael/orca/projects/lixel/kernel/out/usr/lib/modules/7.2.0-rc3+/updates/drivers/trusty/trusty-ipc.ko
+  STRIP   /home/raphael/orca/projects/lixel/kernel/out/usr/lib/modules/7.2.0-rc3+/updates/drivers/trusty/trusty-core.ko
+  STRIP   /home/raphael/orca/projects/lixel/kernel/out/usr/lib/modules/7.2.0-rc3+/updates/drivers/trusty/trusty-log.ko
+  STRIP   /home/raphael/orca/projects/lixel/kernel/out/usr/lib/modules/7.2.0-rc3+/updates/drivers/trusty/trusty-virtio.ko
+  STRIP   /home/raphael/orca/projects/lixel/kernel/out/usr/lib/modules/7.2.0-rc3+/updates/drivers/trusty/trusty-ipc.ko
+  DEPMOD  /home/raphael/orca/projects/lixel/kernel/out/usr/lib/modules/7.2.0-rc3+
+make[1]: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux/trusty“ wird verlassen
+make: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux“ wird verlassen
+make: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux“ wird betreten
+make[1]: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux/gsa“ wird betreten
+  MODPOST Module.symvers
+make[1]: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux/gsa“ wird verlassen
+make: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux“ wird verlassen
+make: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux“ wird betreten
+make[1]: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux/gsa“ wird betreten
+  INSTALL /home/raphael/orca/projects/lixel/kernel/out/usr/lib/modules/7.2.0-rc3+/updates/gsa.ko
+  STRIP   /home/raphael/orca/projects/lixel/kernel/out/usr/lib/modules/7.2.0-rc3+/updates/gsa.ko
+  DEPMOD  /home/raphael/orca/projects/lixel/kernel/out/usr/lib/modules/7.2.0-rc3+
+make[1]: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux/gsa“ wird verlassen
+make: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux“ wird verlassen
+make: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux“ wird betreten
+make[1]: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux/aoc“ wird betreten
+  MODPOST Module.symvers
+WARNING: modpost: missing MODULE_DESCRIPTION() in aoc_core.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in aoc_char_dev.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in aoc_control_dev.o
+WARNING: modpost: missing MODULE_DESCRIPTION() in aoc_channel_dev.o
+make[1]: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux/aoc“ wird verlassen
+make: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux“ wird verlassen
+make: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux“ wird betreten
+make[1]: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux/aoc“ wird betreten
+  INSTALL /home/raphael/orca/projects/lixel/kernel/out/usr/lib/modules/7.2.0-rc3+/updates/mailbox-wc.ko
+  INSTALL /home/raphael/orca/projects/lixel/kernel/out/usr/lib/modules/7.2.0-rc3+/updates/aoc_core.ko
+  INSTALL /home/raphael/orca/projects/lixel/kernel/out/usr/lib/modules/7.2.0-rc3+/updates/aoc_char_dev.ko
+  INSTALL /home/raphael/orca/projects/lixel/kernel/out/usr/lib/modules/7.2.0-rc3+/updates/aoc_control_dev.ko
+  STRIP   /home/raphael/orca/projects/lixel/kernel/out/usr/lib/modules/7.2.0-rc3+/updates/mailbox-wc.ko
+  INSTALL /home/raphael/orca/projects/lixel/kernel/out/usr/lib/modules/7.2.0-rc3+/updates/aoc_channel_dev.ko
+  STRIP   /home/raphael/orca/projects/lixel/kernel/out/usr/lib/modules/7.2.0-rc3+/updates/aoc_core.ko
+  INSTALL /home/raphael/orca/projects/lixel/kernel/out/usr/lib/modules/7.2.0-rc3+/updates/alsa/aoc_alsa_dev.ko
+  STRIP   /home/raphael/orca/projects/lixel/kernel/out/usr/lib/modules/7.2.0-rc3+/updates/aoc_char_dev.ko
+  STRIP   /home/raphael/orca/projects/lixel/kernel/out/usr/lib/modules/7.2.0-rc3+/updates/aoc_control_dev.ko
+  INSTALL /home/raphael/orca/projects/lixel/kernel/out/usr/lib/modules/7.2.0-rc3+/updates/alsa/aoc_alsa_dev_util.ko
+  STRIP   /home/raphael/orca/projects/lixel/kernel/out/usr/lib/modules/7.2.0-rc3+/updates/aoc_channel_dev.ko
+  STRIP   /home/raphael/orca/projects/lixel/kernel/out/usr/lib/modules/7.2.0-rc3+/updates/alsa/aoc_alsa_dev.ko
+  STRIP   /home/raphael/orca/projects/lixel/kernel/out/usr/lib/modules/7.2.0-rc3+/updates/alsa/aoc_alsa_dev_util.ko
+  DEPMOD  /home/raphael/orca/projects/lixel/kernel/out/usr/lib/modules/7.2.0-rc3+
+make[1]: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux/aoc“ wird verlassen
+make: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux“ wird verlassen
+make: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux“ wird betreten
+make[1]: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux/cs35l41dna“ wird betreten
+  MODPOST Module.symvers
+make[1]: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux/cs35l41dna“ wird verlassen
+make: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux“ wird verlassen
+make: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux“ wird betreten
+make[1]: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux/cs35l41dna“ wird betreten
+  INSTALL /home/raphael/orca/projects/lixel/kernel/out/usr/lib/modules/7.2.0-rc3+/updates/snd_soc_cs35l41dna.ko
+  STRIP   /home/raphael/orca/projects/lixel/kernel/out/usr/lib/modules/7.2.0-rc3+/updates/snd_soc_cs35l41dna.ko
+  DEPMOD  /home/raphael/orca/projects/lixel/kernel/out/usr/lib/modules/7.2.0-rc3+
+make[1]: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux/cs35l41dna“ wird verlassen
+make: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux“ wird verlassen
+make: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux“ wird betreten
+make[1]: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/v4l2loopback-0.15.4“ wird betreten
+  MODPOST Module.symvers
+make[1]: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/v4l2loopback-0.15.4“ wird verlassen
+make: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux“ wird verlassen
+make: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux“ wird betreten
+make[1]: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/v4l2loopback-0.15.4“ wird betreten
+  INSTALL /home/raphael/orca/projects/lixel/kernel/out/usr/lib/modules/7.2.0-rc3+/updates/v4l2loopback.ko
+  STRIP   /home/raphael/orca/projects/lixel/kernel/out/usr/lib/modules/7.2.0-rc3+/updates/v4l2loopback.ko
+  DEPMOD  /home/raphael/orca/projects/lixel/kernel/out/usr/lib/modules/7.2.0-rc3+
+make[1]: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/v4l2loopback-0.15.4“ wird verlassen
+make: Verzeichnis „/home/raphael/orca/projects/lixel/kernel/linux“ wird verlassen
+7.2.0-rc3+
+BUILD_OK
+EXIT 0

@@ -1,0 +1,80 @@
+[23:20:31] Zapping buildroots (running in strict mode by default, use --lax to skip zap)[0m
+[23:20:34] Building [94m1[0m package[0m
+[23:20:34]    [94m*[0m edge/linux-postmarketos-gs101[0m
+[23:20:34] [93m=> (1/1)[0m [94medge/linux-postmarketos-gs101[0m: Installing dependencies[0m
+[23:20:34] Initializing x86_64 buildroot[0m
+[23:20:36] (native) Creating chroot[0m
+[23:20:38] (native) install abuild apk-tools build-base ccache git pigz[0m
+[23:20:41] (native) install ccache-cross-symlinks abuild clang[0m
+[23:21:00] (native) install findutils lz4 lld zstd llvm openssl-dev bison python3 flex clang perl[0m
+[23:21:11] [93m=>[0m [94medge/linux-postmarketos-gs101[0m: Building package (cross compiling: cross-native)[0m
+[00:19:06] Zapping buildroots (running in strict mode by default, use --lax to skip zap)[0m
+[00:19:07] [93m=>[0m [94medge/linux-postmarketos-gs101[0m: Done![0m
+[00:19:07] [93m=>[0m [92mFinished building packages[0m
+[00:19:07] [92mDONE![0m[0m
+[00:19:08] [92m*** (1/4) PREPARE NATIVE CHROOT ***[0m
+[00:19:09] (native) Creating chroot[0m
+[00:19:11] (native) install cryptsetup util-linux parted[0m
+[00:19:12] [92m*** (2/4) CREATE DEVICE ROOTFS ("google-oriole") ***[0m
+[00:19:13] (native) install qemu-aarch64[0m
+[00:19:20] [93mWARNING:[0m about to install systemd 262.2-r0 (local pmaports: 262-r4, consider 'pmbootstrap pull')[0m
+[00:19:20] [93mWARNING:[0m about to install systemd 262.2-r0 (local pmaports: 262-r4, consider 'pmbootstrap pull')[0m
+[00:19:20] [93mWARNING:[0m about to install systemd 262.2-r0 (local pmaports: 262-r4, consider 'pmbootstrap pull')[0m
+[00:19:20] (rootfs_google-oriole) install postmarketos-base-systemd[0m
+[00:19:20] [93mWARNING:[0m about to install phosh 99990.58.0-r0 (local pmaports: 99990.57.0-r3, consider 'pmbootstrap pull')[0m
+[00:19:21] [93mWARNING:[0m about to install networkmanager 99991.58.0-r2 (local pmaports: 99991.58.0-r1, consider 'pmbootstrap pull')[0m
+[00:19:21] [93mWARNING:[0m about to install systemd 262.2-r0 (local pmaports: 262-r4, consider 'pmbootstrap pull')[0m
+[00:19:21] [93mWARNING:[0m about to install phosh 99990.58.0-r0 (local pmaports: 99990.57.0-r3, consider 'pmbootstrap pull')[0m
+[00:19:21] [93mWARNING:[0m about to install cups 99992.4.20-r0 (local pmaports: 99992.4.19-r2, consider 'pmbootstrap pull')[0m
+[00:19:21] [93mWARNING:[0m about to install postmarketos-ui-phosh 34-r0 (local pmaports: 33-r0, consider 'pmbootstrap pull')[0m
+[00:19:21] [93mWARNING:[0m about to install phosh 99990.58.0-r0 (local pmaports: 99990.57.0-r3, consider 'pmbootstrap pull')[0m
+[00:19:21] [93mWARNING:[0m about to install phosh 99990.58.0-r0 (local pmaports: 99990.57.0-r3, consider 'pmbootstrap pull')[0m
+[00:19:21] [93mWARNING:[0m about to install postmarketos-base-ui-gnome-mobile 2-r0 (local pmaports: 1-r3, consider 'pmbootstrap pull')[0m
+[00:19:21] [93mWARNING:[0m about to install postmarketos-base-ui 65-r0 (local pmaports: 61-r2, consider 'pmbootstrap pull')[0m
+[00:19:21] [93mWARNING:[0m about to install postmarketos-base-ui 65-r0 (local pmaports: 61-r2, consider 'pmbootstrap pull')[0m
+[00:19:21] [93mWARNING:[0m about to install systemd 262.2-r0 (local pmaports: 262-r4, consider 'pmbootstrap pull')[0m
+[00:19:21] (rootfs_google-oriole) install postmarketos-base device-google-oriole postmarketos-ui-phosh postmarketos-base-nofde flatpak rygel calls gnome-clocks nautilus gst-plugins-rs-dav1d cups showtime chatty gnome-contacts font-droid gst-plugins-bad gnome-text-editor gnome-maps loupe phosh-tour postmarketos-tweaks-setting-definitions gnome-user-share g4music gnome-console tuned-ppd ttyescape gnome-calculator papers fprintd vvmplayer gnome-calendar lang font-twemoji snapshot gnome-weather phosh-mobile-settings firefox-esr sudo-rs gvfs-full decibels font-droid-nonlatin mobile-config-firefox gst-plugins-good lpa-gtk gst-libav[0m
+[00:19:26] [93mWARNING:[0m about to install postmarketos-mkinitfs 2.12.2-r0 (local pmaports: 2.12.0-r1, consider 'pmbootstrap pull')[0m
+[00:19:26] (rootfs_google-oriole) install postmarketos-mkinitfs[0m
+[00:19:27] (rootfs_google-oriole) mkinitfs[0m
+[00:19:42]  [92m*** SET LOGIN PASSWORD FOR: 'user' ***[0m
+[00:19:56] [92m*** (3/4) PREPARE INSTALL BLOCKDEVICE ***[0m
+[00:19:57] (native) create google-oriole.img (3320M)[0m
+[00:19:57] (native) mount /dev/install (google-oriole.img)[0m
+[00:19:57] (native) partition /dev/install (boot: 512M)[0m
+[00:19:58] Mounting partitions of /dev/loop11 inside the chroot[0m
+[00:19:58] (native) install e2fsprogs[0m
+[00:19:59] (native) format /dev/installp2 (pmOS_root, ext4)[0m
+[00:19:59] (native) mount /dev/installp2 to /mnt/install[0m
+[00:19:59] (native) install e2fsprogs[0m
+[00:19:59] (native) format /dev/installp1 (pmOS_boot, ext2)[0m
+[00:20:00] (native) create /etc/fstab[0m
+[00:20:00] (rootfs_google-oriole) mkinitfs[0m
+[00:20:15] [92m*** (4/4) FILL INSTALL BLOCKDEVICE ***[0m
+[00:20:15] (native) copy rootfs_google-oriole to /mnt/install/[0m
+[00:20:28] [0m
+[00:20:28] [92m*** FLASHING INFORMATION ***[0m
+[00:20:28] Run the following to flash your installation to the target device:[0m
+[00:20:28] * pmbootstrap flasher flash_rootfs[0m
+[00:20:28]   Flashes the generated rootfs image to your device:[0m
+[00:20:28]   /home/raphael/.local/var/pmbootstrap-nura/chroot_native/home/pmos/rootfs/google-oriole.img[0m
+[00:20:28]   ([94mNOTE:[0m This file has a partition table, which contains /boot and / subpartitions. That way we don't need to change the partition layout on your device.)[0m
+[00:20:28] * pmbootstrap flasher flash_vbmeta[0m
+[00:20:28]   Flashes vbmeta image with verification disabled flag.[0m
+[00:20:28] * pmbootstrap flasher flash_kernel[0m
+[00:20:28]   Flashes the kernel + initramfs to your device:[0m
+[00:20:28]   /home/raphael/.local/var/pmbootstrap-nura/chroot_rootfs_google-oriole/boot[0m
+[00:20:28]   ([94mNOTE:[0m fastboot also supports booting the kernel/initramfs directly without flashing. Use 'pmbootstrap flasher boot' to do that.)[0m
+[00:20:28] * If the above steps do not work, you can also create symlinks to the generated files with 'pmbootstrap export' and flash outside of pmbootstrap.[0m
+[00:20:28] [0m
+[00:20:28] [92m*** SSH DAEMON INFORMATION ***[0m
+[00:20:28] SSH daemon is enabled (disable with --no-sshd).[0m
+[00:20:28] Login as 'user' with the password given during installation.[0m
+[00:20:28] [0m
+[00:20:28] [92m*** FIREWALL INFORMATION ***[0m
+[00:20:28] Firewall is enabled, but may not work (couldn't determine if kernel supports nftables).[0m
+[00:20:28] For more information: https://postmarketos.org/firewall[0m
+[00:20:28] [0m
+[00:20:28] [94mNOTE:[0m chroot is still active (use 'pmbootstrap shutdown' as necessary)[0m
+[00:20:28] [92mDONE![0m[0m
+EXIT 0

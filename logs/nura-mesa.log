@@ -1,0 +1,21 @@
+[01:13:54] (native) install abuild apk-tools build-base ccache git pigz[0m
+[01:13:57] (native) generate checksums for mesa[0m
+[01:16:37] [94mNOTE:[0m chroot is still active (use 'pmbootstrap shutdown' as necessary)[0m
+[01:16:37] [92mDONE![0m[0m
+[01:16:38] Zapping buildroots (running in strict mode by default, use --lax to skip zap)[0m
+[01:16:39] [93mWARNING:[0m about to install systemd 262.2-r0 (local pmaports: 262-r4, consider 'pmbootstrap pull')[0m
+[01:16:40] Building [94m1[0m package[0m
+[01:16:40]    [94m*[0m edge/mesa[0m
+[01:16:40] [93m=> (1/1)[0m [94medge/mesa[0m: Installing dependencies[0m
+[01:16:40] Initializing aarch64 buildroot[0m
+[01:16:41] (native) Creating chroot[0m
+[01:16:44] (native) install qemu-aarch64[0m
+[01:16:45] (buildroot_aarch64) Creating chroot[0m
+[01:16:48] (buildroot_aarch64) install abuild apk-tools build-base ccache git pigz[0m
+[01:16:51] (buildroot_aarch64) install cbindgen libxdamage-dev expat-dev gettext py3-mako libxml2-dev libclc-dev~23 libx11-dev libdrm-dev llvm23-dev libxfixes-dev python3 xorgproto bison meson zlib-dev libtool py3-yaml clang23-dev libdisplay-info-dev glslang-dev flex vulkan-loader-dev py3-ply libxxf86vm-dev py3-cparser libva-dev eudev-dev spirv-llvm-translator-dev elfutils-dev binutils libxshmfence-dev wayland-dev findutils py3-packaging zstd-dev libxrandr-dev wayland-protocols[0m
+[01:18:05] [93m=>[0m [94medge/mesa[0m: Building package (cross compiling: qemu-only)[0m
+[02:11:32] Zapping buildroots (running in strict mode by default, use --lax to skip zap)[0m
+[02:11:33] [93m=>[0m [94medge/mesa[0m: Done![0m
+[02:11:33] [93m=>[0m [92mFinished building packages[0m
+[02:11:33] [92mDONE![0m[0m
+EXIT 0

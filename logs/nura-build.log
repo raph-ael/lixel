@@ -1,0 +1,217 @@
+[22:44:06] Zapping buildroots (running in strict mode by default, use --lax to skip zap)[0m
+[22:44:08] [93mWARNING:[0m about to install linux-postmarketos-gs101 7.3_rc6-r0 (local pmaports: 7.2.0_rc3-r52, consider 'pmbootstrap pull')[0m
+[22:44:08] [93mWARNING:[0m about to install systemd 262.2-r0 (local pmaports: 262-r4, consider 'pmbootstrap pull')[0m
+[22:44:08] [93mWARNING:[0m cyclical build dependency: building modemmanager with binary package of modemmanager[0m
+[22:44:08] Building [94m10[0m packages[0m
+[22:44:08]    [94m*[0m edge/aoc-voiced[0m
+[22:44:08]    [94m*[0m edge/bcm4776-gnssd[0m
+[22:44:08]    [94m*[0m edge/bootmac[0m
+[22:44:08]    [94m*[0m edge/firmware-google-oriole[0m
+[22:44:08]    [94m*[0m edge/modemmanager[0m
+[22:44:08]    [94m*[0m edge/oriole-sensors[0m
+[22:44:08]    [94m*[0m edge/oriole-modem[0m
+[22:44:08]    [94m*[0m edge/mobile-broadband-provider-info[0m
+[22:44:08]    [94m*[0m edge/u-boot-google-oriole[0m
+[22:44:08]    [94m*[0m edge/device-google-oriole[0m
+[22:44:08] [93m=> (1/10)[0m [94medge/aoc-voiced[0m: Installing dependencies[0m
+[22:44:08] Initializing aarch64 buildroot[0m
+[22:44:10] (native) Creating chroot[0m
+[22:44:13] (native) install qemu-aarch64[0m
+[22:44:13] Register qemu binfmt (aarch64)[0m
+[22:44:14] (buildroot_aarch64) Creating chroot[0m
+[22:44:17] (buildroot_aarch64) install abuild apk-tools build-base ccache git pigz[0m
+[22:44:21] [93mWARNING:[0m about to install musl-aarch64 1.2.6-r6 (local pmaports: 1.2.6-r5, consider 'pmbootstrap pull')[0m
+[22:44:21] (native) install ccache-cross-symlinks abuild gcc-aarch64 g++-aarch64 crossdirect[0m
+[22:44:23] (buildroot_aarch64) install alsa-lib-dev glib-dev[0m
+[22:44:27] [93m=>[0m [94medge/aoc-voiced[0m: Building package (cross compiling: crossdirect)[0m
+[22:44:47] Zapping buildroots (running in strict mode by default, use --lax to skip zap)[0m
+[22:44:48] [93m=>[0m [94medge/aoc-voiced[0m: Done![0m
+[22:44:48] [93m=> (2/10)[0m [94medge/bcm4776-gnssd[0m: Installing dependencies[0m
+[22:44:48] Initializing aarch64 buildroot[0m
+[22:44:49] (native) Creating chroot[0m
+[22:44:51] (native) install qemu-aarch64[0m
+[22:44:52] (buildroot_aarch64) Creating chroot[0m
+[22:44:55] (buildroot_aarch64) install abuild apk-tools build-base ccache git pigz[0m
+[22:44:58] (native) install ccache-cross-symlinks abuild gcc-aarch64 g++-aarch64 crossdirect[0m
+[22:45:00] [93m=>[0m [94medge/bcm4776-gnssd[0m: Building package (cross compiling: crossdirect)[0m
+[22:45:32] Zapping buildroots (running in strict mode by default, use --lax to skip zap)[0m
+[22:45:33] [93m=>[0m [94medge/bcm4776-gnssd[0m: Done![0m
+[22:45:33] [93m=> (3/10)[0m [94medge/bootmac[0m: Installing dependencies[0m
+[22:45:33] Initializing aarch64 buildroot[0m
+[22:45:35] (native) Creating chroot[0m
+[22:45:37] (native) install qemu-aarch64[0m
+[22:45:38] (buildroot_aarch64) Creating chroot[0m
+[22:45:41] (buildroot_aarch64) install abuild apk-tools build-base ccache git pigz[0m
+[22:45:44] (native) install ccache-cross-symlinks abuild gcc-aarch64 g++-aarch64 crossdirect[0m
+[22:45:47] (buildroot_aarch64) install meson[0m
+[22:45:48] [93m=>[0m [94medge/bootmac[0m: Building package (cross compiling: crossdirect)[0m
+[22:46:18] Zapping buildroots (running in strict mode by default, use --lax to skip zap)[0m
+[22:46:19] [93m=>[0m [94medge/bootmac[0m: Done![0m
+[22:46:19] [93m=> (4/10)[0m [94medge/firmware-google-oriole[0m: Installing dependencies[0m
+[22:46:19] Initializing aarch64 buildroot[0m
+[22:46:20] (native) Creating chroot[0m
+[22:46:23] (native) install qemu-aarch64[0m
+[22:46:23] (buildroot_aarch64) Creating chroot[0m
+[22:46:27] (buildroot_aarch64) install abuild apk-tools build-base ccache git pigz[0m
+[22:46:30] (native) install ccache-cross-symlinks abuild gcc-aarch64 g++-aarch64 crossdirect[0m
+[22:46:32] (buildroot_aarch64) install bcm4776-gnssd-fwcut python3 e2fsprogs-extra[0m
+[22:46:34] [93m=>[0m [94medge/firmware-google-oriole[0m: Building package (cross compiling: crossdirect)[0m
+[22:58:31] Zapping buildroots (running in strict mode by default, use --lax to skip zap)[0m
+[22:58:32] [93m=>[0m [94medge/firmware-google-oriole[0m: Done![0m
+[22:58:32] [93m=> (5/10)[0m [94medge/modemmanager[0m: Installing dependencies[0m
+[22:58:32] Initializing aarch64 buildroot[0m
+[22:58:34] (native) Creating chroot[0m
+[22:58:37] (native) install qemu-aarch64[0m
+[22:58:38] (buildroot_aarch64) Creating chroot[0m
+[22:58:43] (buildroot_aarch64) install abuild apk-tools build-base ccache git pigz[0m
+[22:58:47] (native) install ccache-cross-symlinks abuild gcc-aarch64 g++-aarch64 crossdirect[0m
+[22:58:49] (buildroot_aarch64) install bash-completion-dev polkit-dev gobject-introspection-dev linux-headers py3-dbus gtk-doc meson elogind-dev dbus vala libmbim-dev sqlite-dev glib-dev libgudev-dev libqmi-dev dbus-dev py3-gobject3[0m
+[22:59:16] [93m=>[0m [94medge/modemmanager[0m: Building package (cross compiling: crossdirect)[0m
+[23:08:00] Zapping buildroots (running in strict mode by default, use --lax to skip zap)[0m
+[23:08:01] [93m=>[0m [94medge/modemmanager[0m: Done![0m
+[23:08:01] [93m=> (6/10)[0m [94medge/oriole-sensors[0m: Installing dependencies[0m
+[23:08:01] Initializing aarch64 buildroot[0m
+[23:08:02] (native) Creating chroot[0m
+[23:08:05] (native) install qemu-aarch64[0m
+[23:08:05] (buildroot_aarch64) Creating chroot[0m
+[23:08:09] (buildroot_aarch64) install abuild apk-tools build-base ccache git pigz[0m
+[23:08:12] Initializing x86_64 buildroot[0m
+[23:08:12] (native) install abuild apk-tools build-base ccache git pigz[0m
+[23:08:31] (native) install ccache-cross-symlinks abuild gcc-aarch64 g++-aarch64[0m
+[23:08:33] [93m=>[0m [94medge/oriole-sensors[0m: Building package (cross compiling: cross-native2)[0m
+[23:08:34] Zapping buildroots (running in strict mode by default, use --lax to skip zap)[0m
+[23:08:35] [93m=>[0m [94medge/oriole-sensors[0m: Done![0m
+[23:08:35] [93m=> (7/10)[0m [94medge/oriole-modem[0m: Installing dependencies[0m
+[23:08:35] Initializing aarch64 buildroot[0m
+[23:08:36] (native) Creating chroot[0m
+[23:08:39] (native) install qemu-aarch64[0m
+[23:08:39] (buildroot_aarch64) Creating chroot[0m
+[23:08:43] (buildroot_aarch64) install abuild apk-tools build-base ccache git pigz[0m
+[23:08:46] (native) install ccache-cross-symlinks abuild gcc-aarch64 g++-aarch64 crossdirect[0m
+[23:08:49] [93m=>[0m [94medge/oriole-modem[0m: Building package (cross compiling: crossdirect)[0m
+[23:09:07] Zapping buildroots (running in strict mode by default, use --lax to skip zap)[0m
+[23:09:08] [93m=>[0m [94medge/oriole-modem[0m: Done![0m
+[23:09:08] [93m=> (8/10)[0m [94medge/mobile-broadband-provider-info[0m: Installing dependencies[0m
+[23:09:08] Initializing aarch64 buildroot[0m
+[23:09:09] (native) Creating chroot[0m
+[23:09:11] (native) install qemu-aarch64[0m
+[23:09:12] (buildroot_aarch64) Creating chroot[0m
+[23:09:16] (buildroot_aarch64) install abuild apk-tools build-base ccache git pigz[0m
+[23:09:19] Initializing x86_64 buildroot[0m
+[23:09:19] (native) install abuild apk-tools build-base ccache git pigz[0m
+[23:09:22] (native) install ccache-cross-symlinks abuild gcc-aarch64 g++-aarch64[0m
+[23:09:24] [93mWARNING:[0m makedepends not split into _host and _build variants. Trying to install all makedepends in both environments, please adjust your APKBUILD to specify host dependencies (e.g. libevdev-dev) and build dependencies (e.g. meson) separately.[0m
+[23:09:24] [92m*** Install host dependencies[0m
+[23:09:24] (buildroot_aarch64) install libxml2-utils libxslt meson[0m
+[23:09:25] [92m*** Install build dependencies[0m
+[23:09:25] (native) install libxml2-utils libxslt meson[0m
+[23:09:29] [93m=>[0m [94medge/mobile-broadband-provider-info[0m: Building package (cross compiling: cross-native2)[0m
+[23:09:32] Zapping buildroots (running in strict mode by default, use --lax to skip zap)[0m
+[23:09:33] [93m=>[0m [94medge/mobile-broadband-provider-info[0m: Done![0m
+[23:09:33] [93m=> (9/10)[0m [94medge/u-boot-google-oriole[0m: Installing dependencies[0m
+[23:09:33] Initializing x86_64 buildroot[0m
+[23:09:34] (native) Creating chroot[0m
+[23:09:35] (native) install abuild apk-tools build-base ccache git pigz[0m
+[23:09:38] (native) install ccache-cross-symlinks abuild gcc-aarch64 g++-aarch64[0m
+[23:09:40] (native) install bash flex bison openssl-dev py3-elftools py3-setuptools python3 util-linux-dev dtc bc gnutls-dev swig[0m
+[23:09:44] [93m=>[0m [94medge/u-boot-google-oriole[0m: Building package (cross compiling: cross-native)[0m
+[23:09:44] [93mWARNING:[0m Option !tracedeps is not set, but cross compiling with cross-native (version 1). This will probably fail![0m
+[23:10:25] Zapping buildroots (running in strict mode by default, use --lax to skip zap)[0m
+[23:10:26] [93m=>[0m [94medge/u-boot-google-oriole[0m: Done![0m
+[23:10:26] [93m=> (10/10)[0m [94medge/device-google-oriole[0m: Installing dependencies[0m
+[23:10:26] Initializing aarch64 buildroot[0m
+[23:10:27] (native) Creating chroot[0m
+[23:10:29] (native) install qemu-aarch64[0m
+[23:10:30] (buildroot_aarch64) Creating chroot[0m
+[23:10:34] (buildroot_aarch64) install abuild apk-tools build-base ccache git pigz[0m
+[23:10:37] (native) install ccache-cross-symlinks abuild gcc-aarch64 g++-aarch64 crossdirect[0m
+[23:10:39] (buildroot_aarch64) install devicepkg-dev[0m
+[23:10:40] [93m=>[0m [94medge/device-google-oriole[0m: Building package (cross compiling: crossdirect)[0m
+[23:10:59] Zapping buildroots (running in strict mode by default, use --lax to skip zap)[0m
+[23:11:00] [93m=>[0m [94medge/device-google-oriole[0m: Done![0m
+[23:11:00] [93m=>[0m [92mFinished building packages[0m
+[23:11:00] [94mNOTE:[0m Package 'linux-postmarketos-gs101' is up to date. Use 'pmbootstrap build linux-postmarketos-gs101 --force' if needed.[0m
+[23:11:00] [92mDONE![0m[0m
+[23:11:01] [92m*** (1/4) PREPARE NATIVE CHROOT ***[0m
+[23:11:03] (native) Creating chroot[0m
+[23:11:04] (native) install cryptsetup util-linux parted[0m
+[23:11:06] [92m*** (2/4) CREATE DEVICE ROOTFS ("google-oriole") ***[0m
+[23:11:08] (native) install qemu-aarch64[0m
+[23:11:09] (rootfs_google-oriole) Creating chroot[0m
+[23:11:15] [93mWARNING:[0m about to install systemd 262.2-r0 (local pmaports: 262-r4, consider 'pmbootstrap pull')[0m
+[23:11:15] [93mWARNING:[0m about to install systemd 262.2-r0 (local pmaports: 262-r4, consider 'pmbootstrap pull')[0m
+[23:11:15] [93mWARNING:[0m about to install systemd 262.2-r0 (local pmaports: 262-r4, consider 'pmbootstrap pull')[0m
+[23:11:15] (rootfs_google-oriole) install postmarketos-base-systemd[0m
+[23:13:03] [93mWARNING:[0m about to install phosh 99990.58.0-r0 (local pmaports: 99990.57.0-r3, consider 'pmbootstrap pull')[0m
+[23:13:03] [93mWARNING:[0m about to install networkmanager 99991.58.0-r2 (local pmaports: 99991.58.0-r1, consider 'pmbootstrap pull')[0m
+[23:13:03] [93mWARNING:[0m about to install systemd 262.2-r0 (local pmaports: 262-r4, consider 'pmbootstrap pull')[0m
+[23:13:03] [93mWARNING:[0m about to install phosh 99990.58.0-r0 (local pmaports: 99990.57.0-r3, consider 'pmbootstrap pull')[0m
+[23:13:03] [93mWARNING:[0m about to install cups 99992.4.20-r0 (local pmaports: 99992.4.19-r2, consider 'pmbootstrap pull')[0m
+[23:13:03] [93mWARNING:[0m about to install postmarketos-ui-phosh 34-r0 (local pmaports: 33-r0, consider 'pmbootstrap pull')[0m
+[23:13:03] [93mWARNING:[0m about to install phosh 99990.58.0-r0 (local pmaports: 99990.57.0-r3, consider 'pmbootstrap pull')[0m
+[23:13:03] [93mWARNING:[0m about to install phosh 99990.58.0-r0 (local pmaports: 99990.57.0-r3, consider 'pmbootstrap pull')[0m
+[23:13:03] [93mWARNING:[0m about to install postmarketos-base-ui-gnome-mobile 2-r0 (local pmaports: 1-r3, consider 'pmbootstrap pull')[0m
+[23:13:03] [93mWARNING:[0m about to install postmarketos-base-ui 65-r0 (local pmaports: 61-r2, consider 'pmbootstrap pull')[0m
+[23:13:03] [93mWARNING:[0m about to install postmarketos-base-ui 65-r0 (local pmaports: 61-r2, consider 'pmbootstrap pull')[0m
+[23:13:03] [93mWARNING:[0m about to install linux-postmarketos-gs101 7.3_rc6-r0 (local pmaports: 7.2.0_rc3-r52, consider 'pmbootstrap pull')[0m
+[23:13:03] [93mWARNING:[0m about to install systemd 262.2-r0 (local pmaports: 262-r4, consider 'pmbootstrap pull')[0m
+[23:13:03] Building [94m1[0m package[0m
+[23:13:03]    [94m*[0m edge/callaudiod[0m
+[23:13:03] [93m=> (1/1)[0m [94medge/callaudiod[0m: Installing dependencies[0m
+[23:13:03] Initializing aarch64 buildroot[0m
+[23:13:04] (buildroot_aarch64) Creating chroot[0m
+[23:13:08] (buildroot_aarch64) install abuild apk-tools build-base ccache git pigz[0m
+[23:13:12] [93mWARNING:[0m about to install musl-aarch64 1.2.6-r6 (local pmaports: 1.2.6-r5, consider 'pmbootstrap pull')[0m
+[23:13:12] (native) install ccache-cross-symlinks abuild gcc-aarch64 g++-aarch64 crossdirect[0m
+[23:13:14] (buildroot_aarch64) install appstream-dev meson alsa-lib-dev glib-dev pulseaudio-dev[0m
+[23:14:08] [93m=>[0m [94medge/callaudiod[0m: Building package (cross compiling: crossdirect)[0m
+[23:15:21] Zapping buildroots (running in strict mode by default, use --lax to skip zap)[0m
+[23:15:22] [93m=>[0m [94medge/callaudiod[0m: Done![0m
+[23:15:22] (rootfs_google-oriole) install postmarketos-base device-google-oriole postmarketos-ui-phosh postmarketos-base-nofde postmarketos-tweaks-setting-definitions gnome-user-share calls gvfs-full nautilus chatty gnome-contacts decibels ttyescape gnome-maps font-droid gnome-calendar gst-plugins-rs-dav1d firefox-esr cups sudo-rs flatpak tuned-ppd gnome-weather loupe phosh-mobile-settings gnome-text-editor showtime phosh-tour rygel gnome-console gst-libav gnome-calculator lang vvmplayer gnome-clocks g4music papers fprintd font-droid-nonlatin mobile-config-firefox gst-plugins-bad snapshot gst-plugins-good lpa-gtk font-twemoji[0m
+[23:19:03] [93mWARNING:[0m about to install postmarketos-mkinitfs 2.12.2-r0 (local pmaports: 2.12.0-r1, consider 'pmbootstrap pull')[0m
+[23:19:03] (rootfs_google-oriole) install postmarketos-mkinitfs[0m
+[23:19:04] (rootfs_google-oriole) mkinitfs[0m
+[23:19:17]  [92m*** SET LOGIN PASSWORD FOR: 'user' ***[0m
+[23:19:30] (native) Creating chroot[0m
+[23:19:31] (native) install cryptsetup util-linux parted[0m
+[23:19:32] [92m*** (3/4) PREPARE INSTALL BLOCKDEVICE ***[0m
+[23:19:33] (native) create google-oriole.img (3038M)[0m
+[23:19:33] (native) mount /dev/install (google-oriole.img)[0m
+[23:19:34] (native) partition /dev/install (boot: 512M)[0m
+[23:19:34] Mounting partitions of /dev/loop11 inside the chroot[0m
+[23:19:35] (native) install e2fsprogs[0m
+[23:19:35] (native) format /dev/installp2 (pmOS_root, ext4)[0m
+[23:19:36] (native) mount /dev/installp2 to /mnt/install[0m
+[23:19:36] (native) install e2fsprogs[0m
+[23:19:36] (native) format /dev/installp1 (pmOS_boot, ext2)[0m
+[23:19:38] (native) install qemu-aarch64[0m
+[23:19:38] (native) create /etc/fstab[0m
+[23:19:38] (rootfs_google-oriole) mkinitfs[0m
+[23:19:55] [92m*** (4/4) FILL INSTALL BLOCKDEVICE ***[0m
+[23:19:55] (native) copy rootfs_google-oriole to /mnt/install/[0m
+[23:20:00] [0m
+[23:20:00] [92m*** FLASHING INFORMATION ***[0m
+[23:20:00] Run the following to flash your installation to the target device:[0m
+[23:20:00] * pmbootstrap flasher flash_rootfs[0m
+[23:20:00]   Flashes the generated rootfs image to your device:[0m
+[23:20:00]   /home/raphael/.local/var/pmbootstrap-nura/chroot_native/home/pmos/rootfs/google-oriole.img[0m
+[23:20:00]   ([94mNOTE:[0m This file has a partition table, which contains /boot and / subpartitions. That way we don't need to change the partition layout on your device.)[0m
+[23:20:00] * pmbootstrap flasher flash_vbmeta[0m
+[23:20:00]   Flashes vbmeta image with verification disabled flag.[0m
+[23:20:00] * pmbootstrap flasher flash_kernel[0m
+[23:20:00]   Flashes the kernel + initramfs to your device:[0m
+[23:20:00]   /home/raphael/.local/var/pmbootstrap-nura/chroot_rootfs_google-oriole/boot[0m
+[23:20:00]   ([94mNOTE:[0m fastboot also supports booting the kernel/initramfs directly without flashing. Use 'pmbootstrap flasher boot' to do that.)[0m
+[23:20:00] * If the above steps do not work, you can also create symlinks to the generated files with 'pmbootstrap export' and flash outside of pmbootstrap.[0m
+[23:20:00] [0m
+[23:20:00] [92m*** SSH DAEMON INFORMATION ***[0m
+[23:20:00] SSH daemon is enabled (disable with --no-sshd).[0m
+[23:20:00] Login as 'user' with the password given during installation.[0m
+[23:20:00] [0m
+[23:20:00] [92m*** FIREWALL INFORMATION ***[0m
+[23:20:00] Firewall is enabled, but may not work (couldn't determine if kernel supports nftables).[0m
+[23:20:00] For more information: https://postmarketos.org/firewall[0m
+[23:20:00] [0m
+[23:20:00] [94mNOTE:[0m chroot is still active (use 'pmbootstrap shutdown' as necessary)[0m
+[23:20:00] [92mDONE![0m[0m
+EXIT 0

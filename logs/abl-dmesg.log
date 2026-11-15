@@ -1,0 +1,507 @@
+[   0.000000] [I] [LDFW] 3 loaded out of 3
+[   0.000000] [I] [GS] secure payload loading took 8ms
+[   0.000000] [I] [GS] platform info binded: false
+[   0.000000] [I] [GS] platform info: 020306010000
+[   2.675365] [I] [MAIN] 
+welcome to lk/MP
+
+[   2.675388] [I] [MAIN] boot args 0x1 0x0 0x0 0x0
+trusty_dev_common.c: INFO selected trusty api version: 3 (requested 3)
+[   2.676049] [I] [GS] acpm locks regulators
+[   2.676116] [I] [GS] Soc Product ID: 0x09845
+[   2.676141] [I] [GS] Soc rev: B1
+[   2.676160] [I] [GS] Soc ID: <SOCID>
+[   2.676182] [I] [GS] DVFS version: 10
+[   2.676232] [I] [PMIC] S2MPG10 CHIPID 0x5
+[   2.676274] [I] [PMIC] S2MPG11 CHIPID 0x6
+[   2.676325] [I] [PMIC] S2MPG10 PWRONSRC 0x4
+[   2.676373] [I] [PMIC] S2MPG10 OFFSRC 0x20
+[   2.676418] [I] [PMIC] S2MPG10 RTC_WTSR 0x7e
+[   2.676460] [I] [PMIC] S2MPG11 OFFSRC 0x21
+[   2.676504] [I] [PMIC] S2MPG11 INT1 0x3
+[   2.676551] [I] [PMIC] S2MPG11 INT2 0x60
+[   2.676595] [I] [PMIC] S2MPG11 INT3 0x0
+[   2.676638] [I] [PMIC] S2MPG11 INT4 0x0
+[   2.676680] [I] [PMIC] S2MPG11 INT5 0x0
+[   2.676719] [I] [PMIC] S2MPG11 INT6 0x0
+[   2.676744] [I] [PMIC] S2MPG10 INT4 0x0
+[   2.676765] [I] [PMIC] S2MPG10 INT5 0x0
+[   2.676815] [E] [LNXDBG] magic_number must be 0xcceeddff but 0x00000000
+[   2.676853] [E] [LNXDBG] vendor magic_number must be 0xcceeddff but 0x00000000
+APC Bootmetrics:
+  BL1: MT:1 / DT:ENTRY / 87728 us
+  BL1: MT:2 / DT:LOAD  / 3240 us
+  BL1: MT:F / DT:EXIT  / 93096 us
+  PBL: MT:1 / DT:ENTRY / 93168 us
+  PBL: MT:2 / DT:LOAD  / 28776 us
+  PBL: MT:F / DT:EXIT  / 126936 us
+  BL2: MT:1 / DT:ENTRY / 137360 us
+  BL2: MT:2 / DT:LOAD  / 96 us
+  BL2: MT:4 / DT:CHECK / 325952 us
+  BL2: MT:5 / DT:CHECK / 1432 us
+  BL2: MT:6 / DT:LOAD  / 2318872 us
+  BL2: MT:9 / DT:LOAD  / 6656 us
+  BL2: MT:7 / DT:CHECK / 2435464 us
+  BL2: MT:8 / DT:CHECK / 2435592 us
+  BL2: MT:A / DT:LOAD  / 20632 us
+  BL2: MT:B / DT:LOAD  / 16 us
+  BL2: MT:F / DT:EXIT  / 2509984 us
+  PBL: MT:3 / DT:LOAD  / 49544 us
+  PBL: MT:4 / DT:LOAD  / 41560 us
+  PBL: MT:5 / DT:LOAD  / 3560 us
+  PBL: MT:6 / DT:CHECK / 2624664 us
+  PBL: MT:7 / DT:CHECK / 2644880 us
+  EL3: MT:1 / DT:ENTRY / 2645512 us
+  EL3: MT:F / DT:EXIT  / 2656688 us
+APC Breadcrumbs(v2.1):
+ stages(S): 00001244 / 00004040
+  flags(S): 00001140 / 000022C0
+stages(NS): 00000000 / 00005004
+ flags(NS): 00000000 / 00000000
+    status: 00000000 / 00000000
+    device: 00000001 / 00000001
+     reset: 00000000 / 000C0000
+[   2.677453] [E] [DBGC] GSA Breadcrumb:
+00000000 0200000d 00000000 00000000  |................|
+00000000 00000000 00000010           |............    |
+[   2.677542] [I] [DPM] SBDP initialized: chipid allowed=0, dpm_state=0x0000
+[   2.677577] [E] [DPM] check header failed
+[   2.677699] [I] [dev] initializing device i2c:usi12
+[   2.677728] [I] [I2C] usi12: version 2.2
+[   2.677764] [I] [dev] initializing device i2c:usi6
+[   2.677795] [I] [I2C] usi6: version 2.2
+[   2.677832] [I] [dev] initializing device i2c:usi7
+[   2.677858] [I] [I2C] usi7: version 2.2
+[   2.677895] [I] [dev] initializing device i2c:usi8
+[   2.677925] [I] [I2C] usi8: version 2.2
+[   2.680356] [I] [UFS] UFS EVT version 1
+[   2.680389] [I] [UFS] controller version 3.0 found
+[   2.680414] [I] [UFS] capabilities 0x1303ff1f
+[   2.680601] [I] [UFS] UFS device found
+[   2.680620] [E] [UFS] ufshc_notify done
+[   2.680666] [I] [UFS] ufshc_power_mode_change HS gear 4
+[   2.690771] [I] [UFS] ufshc: bBootLunEn 0x2
+[   2.690875] [I] [UFS] UFS device SKhynix HN8T05BZGKX015 version 3.1
+[   2.690909] [I] [UFS] Enabled LUNs found 4
+[   2.690954] [I] [UFS] UFS device total size 127984992256
+[   2.691326] [I] [UFS] Write Booster: available buffer=0x2 lifetime=0x1 current buffer=0xc00
+[   2.691392] [I] [SLIDER] boot slot: b
+[   2.693370] [I] [A/B] slot data a: 0x00000202
+[   2.693393] [I] [A/B] slot data b: 0x00000c00
+[   2.694481] [E] [GPT] partition pinfo not found
+[   2.694505] [E] failed to read pinfo partition -2
+[   2.694527] [E] pinfo data will not persist
+[   2.694555] [E] [GPT] partition pinfo not found
+[   2.694576] [E] failed to write pinfo partition -2
+[   2.694630] [I] [SLIDER] platform info: 020306010000
+[   2.697810] [I] [MAX77759] tcpc vendor id 6a
+[   2.699721] [I] [MG5] FG device name 0x6200
+[   2.702141] [I] [BMS] [MG5] SOC(42), VCELL(3842), INOW(-642), IAVG(131)
+
+[   2.702297] [I] [MAX20339] revision 0x02
+[   2.702397] [I] [MAX20339] OVLO set to 14.5
+[   2.702788] [I] [BMS] fship 0x0
+[   2.703111] [I] [BMS] master disconnect reason 0x0
+[   2.703455] [I] [dev] initializing device cs40l25:cs40l25
+[   2.704207] [I] [CS40L25] CS40L25 found
+[   2.705308] [I] [FUSE] LCS state:PRODUCTION
+[   2.705336] [I] [SLIDER] saving ddr training data
+[   2.706593] [I] [FFU] no valid file
+[   2.712694] [I] [dev] initializing device nfc:st21nfc
+[   2.712736] [I] [SLIDER] [TMU:0] 41
+[   2.712755] [I] [SLIDER] [TMU:1] 41
+[   2.733707] [I] [DSIM] dsim_probe dsim0+
+[   2.733734] [I] [DSIM] using data lane count(4)
+[   2.743894] [E] [DSIM] dsim0 wait phy pll stable
+[   2.743945] [I] [DPU] target_display_primary_reset: BTYPE
+[   2.759998] [I] [DPU] Succeeded to read panel product id : 0x0040803a
+[   2.760029] [E] [DPU] is_compatible is not defined!
+[   2.760054] [I] [DPU] panel_rev: 0x800
+[   2.770108] [I] [DSIM] use panel samsung-s6e3fc3 for dsim0
+[   2.770135] [I] [DSIM] dsim_probe -: dsim0 driver(cmd mode) has been probed.
+[   2.770167] [I] [DSIM] dsim_probe dsim1+
+[   2.770189] [I] [DSIM] using data lane count(4)
+[   2.770235] [E] [DSIM] dsim1 wait phy pll stable
+[   2.810360] [E] [SLIDER] 
+Reboot Info:
+  RST_STAT: 0xc0000 - PIN_RESET | PO_RESET
+  GSA_RESET_STATUS: 0x10 - GSA_INTERMEDIATE_RESET
+  Reboot reason: 0xcafe - User Reboot(S/W Reboot)
+  Reboot mode: 0x0 - Normal Boot
+[   2.810474] [I] LK build date: Jun 19 2026, time: 00:17:24
+[   2.810502] [I] BL version: slider-17.0-15681480
+[   2.810528] [I] BL type: official build
+[   2.820622] [E] [DSIM] timeout!! wait for DSIM interrupt (0x40000000)
+[   2.820652] [E] [DSIM] MIPI DSIM (id=6) read Timeout! 0x4
+[   2.820676] [E] [DSIM] dsim fail to get panel operation
+[   2.820726] [E] [DSIM] dsim has error.
+[   2.820746] [E] [DSIM] dsim_probe -: dsim1 probe failed.
+[   2.820770] [I] [DSIM] dsim1 probe was failed
+[   2.820790] [I] [DSIM] dsim_init -: set dsim0 driver as primary.
+starting app pixel_loader
+[   2.820946] [I] [PXL] sota: empty signature.
+[   2.820969] [I] [PXL] ABL start time (METRICS_BL3): 2656ms
+[   2.820994] [I] [PXL] AB Decision: decrement active slot boot retry
+[   2.821023] [I] [PXL] AB Decisions: 00000000
+[   2.824636] [I] [PXL] boot voltage threshold=3400mV
+[   2.824824] [I] [PXL] bootloader message:
+[   2.832342] [I] [PXL] boot voltage threshold=3400mV
+[   2.832530] [E] [DSIM] dsim0 wait phy pll stable
+[   2.832584] [I] [DPU] target_display_primary_reset: BTYPE
+avb_slot_verify.c:815: ERROR: vbmeta_b: Error verifying vbmeta image: OK_NOT_SIGNED
+[   2.847626] [I] [DPP] dpp_probe +
+[   2.847645] [I] [DPP] dpp-0's attr is (0x00050047)
+[   2.847667] [I] [DPP] dpp(0) init resources.
+[   2.847705] [I] [DPP] dpp_probe -: dpp0 is probed successfully
+[   2.847735] [I] [DECON] decon-int: max win6, command mode, hw trigger
+[   2.847766] [I] [DECON] single dsi mode
+[   2.847792] [I] [decon0] d_path(0xB1) DSCC DSC_ENC1 DSC_ENC0 OFIFO.0
+[   2.847858] [I] [decon0] sel(0x0) OFIFO.0 - dsim0 - samsung-s6e3fc3
+[   2.847888] [I] [DECON] Display 1st window(5) xres(1080) yres(2400) win_start_pos(0) win_end_pos(95f0437)
+[   2.856498] [E] [AVB] avb_property(com.android.build.system.os_version): not found
+[   2.856534] [E] [AVB] system.os_version: can't find property
+[   2.856568] [E] [AVB] avb_property(com.android.build.system.security_patch): not found
+[   2.856603] [E] [AVB] system_spl: can't find property
+[   2.856626] [E] [AVB] avb_property(com.android.build.boot.security_patch): not found
+[   2.856659] [E] [AVB] boot_spl: can't find property
+[   2.856685] [I] [AVB] boot_state: 000000:20000000:20000000
+trusty_dev_common.c: INFO selected trusty api version: 3 (requested 3)
+[   2.857148] [I] [AND] kernel: addr:0xffff0000a0001000, size:ef4bad
+[   2.905996] [I] [AND] vendor ramdisk copy
+[   2.906020] [I] [AND] ramdisk dst addr: 0xffff0000b0000000 src addr: 0xffff0000a4001000 size: 0xda1b8e(14293902)
+[   2.906068] [I] [AND] padding prepended: 0
+[   2.910298] [I] [AND] Ramdisk load size with padding: 14293902
+[   2.910619] [I] [DTBO] SOC DTB: index:0
+[   2.910645] [I] [DTBO] DTBO match: id 0x20304, rev 0x10000
+ERROR: ufdt_overlay_do_fixups():No node __symbols__ in main dtb.
+ERROR: ufdt_overlay_apply():failed to perform fixups in overlay
+[   2.913442] [E] [AND] failed to merge dtb and dtbo
+[   2.936794] [I] [AND] kernel: total_time:80
+[   2.939879] [E] [PXL] failed to boot android 0
+[   2.939912] [I] [PXL] fastboot enter reason: boot failure
+starting app pixel_charger
+[   2.942414] [I] [MAX77759] TCPC BC1.2, type: 0 val:0
+[   3.041741] [I] [DECON] decon0 registered successfully
+[   3.068906] [I] [MODEM] version: g5123b-145971-260721-B-15910359
+[   4.195607] [I] [MAX77759] TCPC BC1.2, type: 1 val:65
+[   4.274924] [I] [TCPM] port connected
+[   4.277927] [I] [PHY] USB Pipe3 Initialization...
+[   4.288202] [I] [MAX77759] TCPC BC1.2, type: 1 val:1
+[   4.288880] [I] [MAX77759] TCPC BC1.2, type: 1 val:1
+[   4.298114] [I] [MAX77759] TCPC BC1.2, type: 1 val:1
+[   4.298772] [I] [MAX77759] TCPC BC1.2, type: 1 val:1
+[   4.740583] [I] [UDC] new high-speed device found
+[   4.759414] [I] [MAX77759] TCPC BC1.2, type: 1 val:1
+[   6.634972] [I] [MAX77759] TCPC BC1.2, type: 1 val:1
+[   6.635625] [I] [MAX77759] TCPC BC1.2, type: 1 val:1
+[   6.878947] [I] [UDC] new high-speed device found
+[   6.896764] [I] [MAX77759] TCPC BC1.2, type: 1 val:1
+[ 133.492513] [I] [FB] Accept cmd:getvar:all
+[ 133.492617] [I] [FB] INFOap-ar-ns:6
+[ 133.492684] [I] [FB] INFOap-ar-s:3
+[ 133.492773] [I] [FB] INFOavb-hastree-error-mode:restart
+avb_slot_verify.c:815: ERROR: vbmeta_b: Error verifying vbmeta image: OK_NOT_SIGNED
+[ 133.493898] [E] [AVB] avb slot data invalid
+[ 133.494100] [I] [FB] INFObattery-current:296 mA
+[ 133.496030] [I] [FB] INFObattery-soc:43 %
+[ 133.496242] [I] [FB] INFObattery-soc-ok:yes
+[ 133.496479] [I] [FB] INFObattery-voltage:3916 mV
+[ 133.496555] [I] [FB] INFOcurrent-slot:b
+[ 133.496623] [I] [FB] INFOddr-manu:Samsung
+[ 133.496713] [I] [FB] INFOddr-size:8GB
+[ 133.496780] [I] [FB] INFOddr-type:LPDDR5
+[ 133.496848] [I] [FB] INFOenter-reason:boot failure
+[ 133.496920] [I] [FB] INFOerase-block-size:0x1000
+[ 133.497008] [I] [FB] INFOfdevinit-count:0
+[ 133.497095] [I] [FB] INFOfdevinit-set-time:0
+[ 133.497182] [I] [FB] INFOfdevinit-total-time:0
+[ 133.497434] [I] [FB] INFOfg-soc:43.11 %
+[ 133.500888] [E] [GSA] response error 1
+[ 133.500934] [I] failed to get GSA anti-rollback counters -7
+[ 133.500995] [I] [FB] INFOhas-slot:persist:no
+[ 133.501062] [I] [FB] INFOhas-slot:klog:no
+[ 133.501155] [I] [FB] INFOhas-slot:misc:no
+[ 133.501217] [I] [FB] INFOhas-slot:frp:no
+[ 133.501281] [I] [FB] INFOhas-slot:efs:no
+[ 133.501345] [I] [FB] INFOhas-slot:efs_backup:no
+[ 133.501416] [I] [FB] INFOhas-slot:modem_userdata:no
+[ 133.501509] [I] [FB] INFOhas-slot:metadata:no
+[ 133.501573] [I] [FB] INFOhas-slot:fips:no
+[ 133.501639] [I] [FB] INFOhas-slot:dtbo:yes
+[ 133.501727] [I] [FB] INFOhas-slot:vendor_boot:yes
+[ 133.501806] [I] [FB] INFOhas-slot:modem:yes
+[ 133.501867] [I] [FB] INFOhas-slot:boot:yes
+[ 133.501936] [I] [FB] INFOhas-slot:vbmeta:yes
+[ 133.501999] [I] [FB] INFOhas-slot:vbmeta_system:yes
+[ 133.502062] [I] [FB] INFOhas-slot:vbmeta_vendor:yes
+[ 133.502125] [I] [FB] INFOhas-slot:pvmfw:yes
+[ 133.502189] [I] [FB] INFOhas-slot:super:no
+[ 133.502257] [I] [FB] INFOhas-slot:userdata:no
+[ 133.502321] [I] [FB] INFOhas-slot:bl1:yes
+[ 133.502386] [I] [FB] INFOhas-slot:pbl:yes
+[ 133.502452] [I] [FB] INFOhas-slot:bl2:yes
+[ 133.502530] [I] [FB] INFOhas-slot:dram_train:yes
+[ 133.502607] [I] [FB] INFOhas-slot:abl:yes
+[ 133.502673] [I] [FB] INFOhas-slot:bl31:yes
+[ 133.502736] [I] [FB] INFOhas-slot:tzsw:yes
+[ 133.502803] [I] [FB] INFOhas-slot:gsa:yes
+[ 133.502864] [I] [FB] INFOhas-slot:ldfw:yes
+[ 133.502936] [I] [FB] INFOhas-slot:dpm:yes
+[ 133.503012] [I] [FB] INFOhas-slot:devinfo:no
+[ 133.503094] [I] [FB] INFOhas-slot:mfg_data:no
+[ 133.503166] [I] [FB] INFOhas-slot:system_b-cow:no
+[ 133.503230] [I] [FB] INFOhas-slot:system_ext_b-cow:no
+[ 133.503329] [I] [FB] INFOhas-slot:product_b-cow:no
+[ 133.503405] [I] [FB] INFOhas-slot:vendor_b-cow:no
+[ 133.503469] [I] [FB] INFOhas-slot:vendor_dlkm_b-cow:no
+[ 133.503552] [I] [FB] INFOhas-slot:radio:yes
+[ 133.503640] [I] [FB] INFOhas-slot:bootloader:yes
+[ 133.503736] [I] [FB] INFOhw-revision:MP1.0
+[ 133.503811] [I] [FB] INFOis-logical:persist:no
+[ 133.503905] [I] [FB] INFOis-logical:klog:no
+[ 133.503993] [I] [FB] INFOis-logical:misc:no
+[ 133.504057] [I] [FB] INFOis-logical:frp:no
+[ 133.504118] [I] [FB] INFOis-logical:efs:no
+[ 133.504210] [I] [FB] INFOis-logical:efs_backup:no
+[ 133.504329] [I] [FB] INFOis-logical:modem_userdata:no
+[ 133.504404] [I] [FB] INFOis-logical:metadata:no
+[ 133.504494] [I] [FB] INFOis-logical:fips:no
+[ 133.504569] [I] [FB] INFOis-logical:dtbo_a:no
+[ 133.504634] [I] [FB] INFOis-logical:vendor_boot_a:no
+[ 133.504727] [I] [FB] INFOis-logical:modem_a:no
+[ 133.504802] [I] [FB] INFOis-logical:boot_a:no
+[ 133.504863] [I] [FB] INFOis-logical:vbmeta_a:no
+[ 133.504939] [I] [FB] INFOis-logical:vbmeta_system_a:no
+[ 133.505033] [I] [FB] INFOis-logical:vbmeta_vendor_a:no
+[ 133.505099] [I] [FB] INFOis-logical:pvmfw_a:no
+[ 133.505176] [I] [FB] INFOis-logical:dtbo_b:no
+[ 133.505242] [I] [FB] INFOis-logical:vendor_boot_b:no
+[ 133.505330] [I] [FB] INFOis-logical:modem_b:no
+[ 133.505405] [I] [FB] INFOis-logical:boot_b:no
+[ 133.505467] [I] [FB] INFOis-logical:vbmeta_b:no
+[ 133.505531] [I] [FB] INFOis-logical:vbmeta_system_b:no
+[ 133.505621] [I] [FB] INFOis-logical:vbmeta_vendor_b:no
+[ 133.505707] [I] [FB] INFOis-logical:pvmfw_b:no
+[ 133.505779] [I] [FB] INFOis-logical:super:no
+[ 133.505843] [I] [FB] INFOis-logical:userdata:no
+[ 133.505913] [I] [FB] INFOis-logical:bl1_a:no
+[ 133.505975] [I] [FB] INFOis-logical:pbl_a:no
+[ 133.506052] [I] [FB] INFOis-logical:bl2_a:no
+[ 133.506114] [I] [FB] INFOis-logical:dram_train_a:no
+[ 133.506202] [I] [FB] INFOis-logical:abl_a:no
+[ 133.506283] [I] [FB] INFOis-logical:bl31_a:no
+[ 133.506344] [I] [FB] INFOis-logical:tzsw_a:no
+[ 133.506407] [I] [FB] INFOis-logical:gsa_a:no
+[ 133.506469] [I] [FB] INFOis-logical:ldfw_a:no
+[ 133.506531] [I] [FB] INFOis-logical:dpm_a:no
+[ 133.506595] [I] [FB] INFOis-logical:bl1_b:no
+[ 133.506659] [I] [FB] INFOis-logical:pbl_b:no
+[ 133.506722] [I] [FB] INFOis-logical:bl2_b:no
+[ 133.506778] [I] [FB] INFOis-logical:dram_train_b:no
+[ 133.506848] [I] [FB] INFOis-logical:abl_b:no
+[ 133.506919] [I] [FB] INFOis-logical:bl31_b:no
+[ 133.507010] [I] [FB] INFOis-logical:tzsw_b:no
+[ 133.507072] [I] [FB] INFOis-logical:gsa_b:no
+[ 133.507157] [I] [FB] INFOis-logical:ldfw_b:no
+[ 133.507218] [I] [FB] INFOis-logical:dpm_b:no
+[ 133.507278] [I] [FB] INFOis-logical:devinfo:no
+[ 133.507345] [I] [FB] INFOis-logical:mfg_data:no
+[ 133.507404] [I] [FB] INFOis-logical:system_b:yes
+[ 133.507472] [I] [FB] INFOis-logical:system_ext_b:yes
+[ 133.507563] [I] [FB] INFOis-logical:product_b:yes
+[ 133.507655] [I] [FB] INFOis-logical:vendor_b:yes
+[ 133.507744] [I] [FB] INFOis-logical:vendor_dlkm_b:yes
+[ 133.507835] [I] [FB] INFOis-logical:system_b-cow:yes
+[ 133.507902] [I] [FB] INFOis-logical:system_ext_b-cow:yes
+[ 133.507999] [I] [FB] INFOis-logical:product_b-cow:yes
+[ 133.508085] [I] [FB] INFOis-logical:vendor_b-cow:yes
+[ 133.508175] [I] [FB] INFOis-logical:vendor_dlkm_b-cow:yes
+[ 133.508285] [I] [FB] INFOis-ramdump-mode:no
+[ 133.508373] [I] [FB] INFOis-userspace:no
+[ 133.508435] [I] [FB] INFOlogical-block-size:0x1000
+[ 133.508533] [I] [FB] INFOmax-download-size:0xf900000
+[ 133.508596] [I] [FB] INFOmax-fetch-size:0xf900000
+[ 133.542627] [I] [FB] INFOnos-production:yes
+[ 133.542687] [I] [FB] INFOoff-mode-charge:1
+[ 133.542812] [I] [FB] INFOpartition-size:persist:0x4000000
+[ 133.542907] [I] [FB] INFOpartition-size:klog:0x1000000
+[ 133.542970] [I] [FB] INFOpartition-size:misc:0x100000
+[ 133.543052] [I] [FB] INFOpartition-size:frp:0x80000
+[ 133.543127] [I] [FB] INFOpartition-size:efs:0xa00000
+[ 133.543192] [I] [FB] INFOpartition-size:efs_backup:0x500000
+[ 133.543283] [I] [FB] INFOpartition-size:modem_userdata:0x500000
+[ 133.543383] [I] [FB] INFOpartition-size:metadata:0x1000000
+[ 133.543458] [I] [FB] INFOpartition-size:fips:0x200000
+[ 133.543535] [I] [FB] INFOpartition-size:dtbo_a:0x1000000
+[ 133.543617] [I] [FB] INFOpartition-size:vendor_boot_a:0x4000000
+[ 133.543695] [I] [FB] INFOpartition-size:modem_a:0xc800000
+[ 133.543783] [I] [FB] INFOpartition-size:boot_a:0x4000000
+[ 133.543858] [I] [FB] INFOpartition-size:vbmeta_a:0x10000
+[ 133.543939] [I] [FB] INFOpartition-size:vbmeta_system_a:0x10000
+[ 133.544013] [I] [FB] INFOpartition-size:vbmeta_vendor_a:0x10000
+[ 133.544100] [I] [FB] INFOpartition-size:pvmfw_a:0x100000
+[ 133.544175] [I] [FB] INFOpartition-size:dtbo_b:0x1000000
+[ 133.544253] [I] [FB] INFOpartition-size:vendor_boot_b:0x4000000
+[ 133.544333] [I] [FB] INFOpartition-size:modem_b:0xc800000
+[ 133.544405] [I] [FB] INFOpartition-size:boot_b:0x4000000
+[ 133.544484] [I] [FB] INFOpartition-size:vbmeta_b:0x10000
+[ 133.544562] [I] [FB] INFOpartition-size:vbmeta_system_b:0x10000
+[ 133.544636] [I] [FB] INFOpartition-size:vbmeta_vendor_b:0x10000
+[ 133.544726] [I] [FB] INFOpartition-size:pvmfw_b:0x100000
+[ 133.544806] [I] [FB] INFOpartition-size:super:0x1fc800000
+[ 133.544885] [I] [FB] INFOpartition-size:userdata:0x1b91215000
+[ 133.544966] [I] [FB] INFOpartition-size:bl1_a:0x3000
+[ 133.545031] [I] [FB] INFOpartition-size:pbl_a:0x14000
+[ 133.545113] [I] [FB] INFOpartition-size:bl2_a:0x87000
+[ 133.545191] [I] [FB] INFOpartition-size:dram_train_a:0x19000
+[ 133.545283] [I] [FB] INFOpartition-size:abl_a:0x200000
+[ 133.545354] [I] [FB] INFOpartition-size:bl31_a:0x40000
+[ 133.545420] [I] [FB] INFOpartition-size:tzsw_a:0x1400000
+[ 133.545491] [I] [FB] INFOpartition-size:gsa_a:0x80000
+[ 133.545573] [I] [FB] INFOpartition-size:ldfw_a:0x400000
+[ 133.545659] [I] [FB] INFOpartition-size:dpm_a:0x9000
+[ 133.545734] [I] [FB] INFOpartition-size:bl1_b:0x3000
+[ 133.545800] [I] [FB] INFOpartition-size:pbl_b:0x14000
+[ 133.545874] [I] [FB] INFOpartition-size:bl2_b:0x87000
+[ 133.545946] [I] [FB] INFOpartition-size:dram_train_b:0x19000
+[ 133.546010] [I] [FB] INFOpartition-size:abl_b:0x200000
+[ 133.546076] [I] [FB] INFOpartition-size:bl31_b:0x40000
+[ 133.546157] [I] [FB] INFOpartition-size:tzsw_b:0x1400000
+[ 133.546232] [I] [FB] INFOpartition-size:gsa_b:0x80000
+[ 133.546308] [I] [FB] INFOpartition-size:ldfw_b:0x400000
+[ 133.546383] [I] [FB] INFOpartition-size:dpm_b:0x9000
+[ 133.546452] [I] [FB] INFOpartition-size:devinfo:0x2000
+[ 133.546537] [I] [FB] INFOpartition-size:mfg_data:0x334000
+[ 133.546609] [I] [FB] INFOpartition-size:system_b:0x60ef6000
+[ 133.546691] [I] [FB] INFOpartition-size:system_ext_b:0x244f7000
+[ 133.546784] [I] [FB] INFOpartition-size:product_b:0x537c3000
+[ 133.546859] [I] [FB] INFOpartition-size:vendor_b:0x273bd000
+[ 133.546938] [I] [FB] INFOpartition-size:vendor_dlkm_b:0x325d000
+[ 133.547011] [I] [FB] INFOpartition-size:system_b-cow:0xbba9000
+[ 133.547082] [I] [FB] INFOpartition-size:system_ext_b-cow:0x8105000
+[ 133.547157] [I] [FB] INFOpartition-size:product_b-cow:0x18b4e000
+[ 133.547244] [I] [FB] INFOpartition-size:vendor_b-cow:0xe03000
+[ 133.547340] [I] [FB] INFOpartition-size:vendor_dlkm_b-cow:0x144e000
+[ 133.547425] [I] [FB] INFOpartition-type:persist:ext4
+[ 133.547517] [I] [FB] INFOpartition-type:klog:raw
+[ 133.547597] [I] [FB] INFOpartition-type:misc:raw
+[ 133.547669] [I] [FB] INFOpartition-type:frp:raw
+[ 133.547740] [I] [FB] INFOpartition-type:efs:ext4
+[ 133.547803] [I] [FB] INFOpartition-type:efs_backup:ext4
+[ 133.547884] [I] [FB] INFOpartition-type:modem_userdata:raw
+[ 133.547968] [I] [FB] INFOpartition-type:metadata:raw
+[ 133.548063] [I] [FB] INFOpartition-type:fips:raw
+[ 133.548137] [I] [FB] INFOpartition-type:dtbo_a:raw
+[ 133.548218] [I] [FB] INFOpartition-type:vendor_boot_a:raw
+[ 133.548291] [I] [FB] INFOpartition-type:modem_a:raw
+[ 133.548355] [I] [FB] INFOpartition-type:boot_a:raw
+[ 133.548431] [I] [FB] INFOpartition-type:vbmeta_a:raw
+[ 133.548516] [I] [FB] INFOpartition-type:vbmeta_system_a:raw
+[ 133.548595] [I] [FB] INFOpartition-type:vbmeta_vendor_a:raw
+[ 133.548683] [I] [FB] INFOpartition-type:pvmfw_a:raw
+[ 133.548757] [I] [FB] INFOpartition-type:dtbo_b:raw
+[ 133.548843] [I] [FB] INFOpartition-type:vendor_boot_b:raw
+[ 133.548915] [I] [FB] INFOpartition-type:modem_b:raw
+[ 133.548995] [I] [FB] INFOpartition-type:boot_b:raw
+[ 133.549066] [I] [FB] INFOpartition-type:vbmeta_b:raw
+[ 133.549142] [I] [FB] INFOpartition-type:vbmeta_system_b:raw
+[ 133.549222] [I] [FB] INFOpartition-type:vbmeta_vendor_b:raw
+[ 133.549303] [I] [FB] INFOpartition-type:pvmfw_b:raw
+[ 133.549390] [I] [FB] INFOpartition-type:super:raw
+[ 133.549459] [I] [FB] INFOpartition-type:userdata:raw
+[ 133.549532] [I] [FB] INFOpartition-type:bl1_a:raw
+[ 133.549599] [I] [FB] INFOpartition-type:pbl_a:raw
+[ 133.549670] [I] [FB] INFOpartition-type:bl2_a:raw
+[ 133.549740] [I] [FB] INFOpartition-type:dram_train_a:raw
+[ 133.549806] [I] [FB] INFOpartition-type:abl_a:raw
+[ 133.549876] [I] [FB] INFOpartition-type:bl31_a:raw
+[ 133.549962] [I] [FB] INFOpartition-type:tzsw_a:raw
+[ 133.550065] [I] [FB] INFOpartition-type:gsa_a:raw
+[ 133.550128] [I] [FB] INFOpartition-type:ldfw_a:raw
+[ 133.550214] [I] [FB] INFOpartition-type:dpm_a:raw
+[ 133.550280] [I] [FB] INFOpartition-type:bl1_b:raw
+[ 133.550358] [I] [FB] INFOpartition-type:pbl_b:raw
+[ 133.550452] [I] [FB] INFOpartition-type:bl2_b:raw
+[ 133.550535] [I] [FB] INFOpartition-type:dram_train_b:raw
+[ 133.550618] [I] [FB] INFOpartition-type:abl_b:raw
+[ 133.550679] [I] [FB] INFOpartition-type:bl31_b:raw
+[ 133.550746] [I] [FB] INFOpartition-type:tzsw_b:raw
+[ 133.550807] [I] [FB] INFOpartition-type:gsa_b:raw
+[ 133.550909] [I] [FB] INFOpartition-type:ldfw_b:raw
+[ 133.550977] [I] [FB] INFOpartition-type:dpm_b:raw
+[ 133.551054] [I] [FB] INFOpartition-type:devinfo:raw
+[ 133.551130] [I] [FB] INFOpartition-type:mfg_data:raw
+[ 133.551200] [I] [FB] INFOpartition-type:system_b:raw
+[ 133.551283] [I] [FB] INFOpartition-type:system_ext_b:raw
+[ 133.551362] [I] [FB] INFOpartition-type:product_b:raw
+[ 133.551444] [I] [FB] INFOpartition-type:vendor_b:raw
+[ 133.551533] [I] [FB] INFOpartition-type:vendor_dlkm_b:raw
+[ 133.551610] [I] [FB] INFOpartition-type:system_b-cow:raw
+[ 133.551689] [I] [FB] INFOpartition-type:system_ext_b-cow:raw
+[ 133.551782] [I] [FB] INFOpartition-type:product_b-cow:raw
+[ 133.551859] [I] [FB] INFOpartition-type:vendor_b-cow:raw
+[ 133.551939] [I] [FB] INFOpartition-type:vendor_dlkm_b-cow:raw
+[ 133.552036] [I] [FB] INFOproduct:oriole
+[ 133.552095] [I] [FB] INFOsbdp:pbl:no
+[ 133.552158] [I] [FB] INFOsbdp:bl2:no
+[ 133.552224] [I] [FB] INFOsbdp:bl31:no
+[ 133.552279] [I] [FB] INFOsbdp:tzsw:no
+[ 133.552341] [I] [FB] INFOsbdp:ldfw:no
+[ 133.552407] [I] [FB] INFOsbdp:abl:no
+[ 133.552463] [I] [FB] INFOsbdp:hv:no
+[ 133.552531] [I] [FB] INFOsbdp:gsa:no
+[ 133.552587] [I] [FB] INFOsbdp:aoc:no
+[ 133.552657] [I] [FB] INFOsbdp:tpu:no
+[ 133.552721] [I] [FB] INFOsbdp:ta:no
+[ 133.552779] [I] [FB] INFOsbdp:tzprov:no
+[ 133.552845] [I] [FB] INFOsbdp:gcf:no
+[ 133.552908] [I] [FB] INFOsbdp:pkhash:no
+[ 133.552962] [I] [FB] INFOsbdp:ar-check:no
+[ 133.553031] [I] [FB] INFOsbdp:ar-update:no
+[ 133.553092] [I] [FB] INFOsbdp:allow:no
+[ 133.553163] [I] [FB] INFOsecure:yes
+[ 133.553246] [I] [FB] INFOsecure-boot:PRODUCTION
+[ 133.553311] [I] [FB] INFOserialno:<SERIAL>
+[ 133.553391] [I] [FB] INFOslot-count:2
+[ 133.553449] [I] [FB] INFOslot-fastboot-ok:a:no
+[ 133.553534] [I] [FB] INFOslot-fastboot-ok:b:yes
+[ 133.553598] [I] [FB] INFOslot-retry-count:a:2
+[ 133.553654] [I] [FB] INFOslot-retry-count:b:1
+[ 133.553733] [I] [FB] INFOslot-successful:a:yes
+[ 133.553808] [I] [FB] INFOslot-successful:b:no
+[ 133.553878] [I] [FB] INFOslot-suffixes:_a,_b
+[ 133.553939] [I] [FB] INFOslot-unbootable:a:no
+[ 133.554031] [I] [FB] INFOslot-unbootable:b:no
+[ 133.554953] [I] [FB] INFOsnapshot-update-status:none
+[ 133.555046] [I] [FB] INFOsoc-id:000008f5f6576a50
+[ 133.555137] [I] [FB] INFOstorage-capacity:128 GB
+[ 133.555213] [I] [FB] INFOstorage-model:HN8T05BZGKX015
+[ 133.555287] [I] [FB] INFOstorage-phy-date:N/A
+[ 133.555354] [I] [FB] INFOstorage-phy-version:N/A
+[ 133.555429] [I] [FB] INFOstorage-power-mode:lanes=2 gear=4 mode=FAST hs_series=SERIES_B
+[ 133.555537] [I] [FB] INFOstorage-protocol:3.1
+[ 133.555647] [I] [FB] INFOstorage-rev:G001
+[ 133.555751] [I] [FB] INFOstorage-serialno:N/A
+[ 133.555868] [I] [UFS] Temp too high enabled
+[ 133.555969] [I] [UFS] Temp too low enabled
+[ 133.556036] [I] [FB] INFOstorage-temperature:35 degrees celsius
+[ 133.556117] [I] [FB] INFOstorage-ufs-provisioning:Legacy
+[ 133.556206] [I] [FB] INFOstorage-vendor:SKhynix
+[ 133.557925] [I] [FB] INFOunlocked:yes
+[ 133.557990] [I] [FB] INFOvariant:N/A
+[ 133.558059] [I] [FB] INFOversion:0.4
+[ 133.558257] [I] [MODEM] version: g5123b-145971-260721-B-15910359
+[ 133.558310] [I] [FB] INFOversion-baseband:g5123b-145971-260721-B-15910359
+[ 133.558410] [I] [FB] INFOversion-bootloader:slider-17.0-15681480
+[ 133.558771] [I] [FB] INFOversion-trusty:15644732
+[ 133.558859] [I] [FB] OKAY
+[ 133.663014] [I] [FB] Accept cmd:oem help
+[ 133.663147] [I] [FB] FAILInvalid oem command help
+[ 157.315104] [I] [FB] Accept cmd:oem dmesg
+[ 157.475191] [I] [FB] Accept cmd:oem get-log
+[ 157.475237] [I] [FB] FAILInvalid oem command get-log
+[ 157.616067] [I] [FB] Accept cmd:oem bootlog
+[ 157.616111] [I] [FB] FAILInvalid oem command bootlog
+[ 163.240036] [I] [FB] Accept cmd:oem dmesg
+OKAY [  0.047s]
+Finished. Total time: 0.047s
